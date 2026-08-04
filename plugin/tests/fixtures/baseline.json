@@ -1,0 +1,78 @@
+{
+  "en": {
+    "sentence-length": {
+      "violating": [
+        "[STE 6.3] sentence has 26 words (cap 25): \"This sentence is deliberately very long so that the word cou...\""
+      ],
+      "conforming": []
+    },
+    "semicolon": {
+      "violating": [
+        "[STE 8.1] 1 semicolon(s) in prose — STE bans semicolons. Replace with period or split."
+      ],
+      "conforming": []
+    },
+    "nominalization": {
+      "violating": [
+        "[STE 3.7] nominalization — use a verb: \"perform an analysis\""
+      ],
+      "conforming": []
+    },
+    "phrasal-verb": {
+      "violating": [
+        "[STE] phrasal verb \"spin up\" — replace with a precise verb."
+      ],
+      "conforming": []
+    },
+    "banned": {
+      "violating": [
+        "[anti-slop] banned \"seamless\" — cut or replace with a concrete spec."
+      ],
+      "conforming": []
+    },
+    "em-dash": {
+      "violating": [
+        "[STE] 2 em-dashes in a 31-word paragraph — keep at most 1."
+      ],
+      "conforming": []
+    }
+  },
+  "de": {
+    "calque": {
+      "violating": [
+        "[Denglish] calque \"committen\" — use German form."
+      ],
+      "conforming": []
+    },
+    "passiv": {
+      "violating": [
+        "[tekom S 501] Vorgangspassiv: \"Es wird verarbeitet\" — make the actor explicit, use active voice."
+      ],
+      "conforming": []
+    },
+    "passiv-modal": {
+      "violating": [
+        "[tekom S 503] Passiv mit Modalverb: \"kann geändert werden\" — use imperative or \"man kann X\"."
+      ],
+      "conforming": []
+    },
+    "compound": {
+      "violating": [
+        "[tekom B 104-110] compound without Bindestrich: \"3 Wege\" — add hyphen."
+      ],
+      "conforming": []
+    },
+    "sentence-length": {
+      "violating": [
+        "[82079-1 minimalism] sentence has 26 words — consider splitting."
+      ],
+      "conforming": []
+    },
+    "floskel": {
+      "violating": [
+        "[tekom L 112] Floskel: \"Im Allgemeinen\" — cut or replace with a concrete condition."
+      ],
+      "conforming": []
+    }
+  }
+}

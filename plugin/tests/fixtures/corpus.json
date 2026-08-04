@@ -1,0 +1,59 @@
+{
+  "en": {
+    "sentence-length": {
+      "violating": "This sentence is deliberately very long so that the word count exceeds the descriptive limit of twenty five words and the check fires as expected indeed.",
+      "conforming": "The system analyzes the data. The user starts the service."
+    },
+    "semicolon": {
+      "violating": "Use a period to end a sentence; do not use a semicolon.",
+      "conforming": "Use a period to end a sentence. Do not use a semicolon."
+    },
+    "nominalization": {
+      "violating": "The team will perform an analysis of the results.",
+      "conforming": "The team analyzed the results."
+    },
+    "phrasal-verb": {
+      "violating": "Let us spin up the new service now.",
+      "conforming": "Start the new service now."
+    },
+    "banned": {
+      "violating": "We use a seamless architecture for the project.",
+      "conforming": "We use a simple solution for the project."
+    },
+    "em-dash": {
+      "violating": "The system has two modes — warning and blocking — for handling violations. Each mode changes how the agent reports a problem in a document that the user writes today for the team.",
+      "conforming": "The system has one mode — warning — for reporting violations."
+    }
+  },
+  "de": {
+    "calque": {
+      "violating": "Wir committen die Änderungen.",
+      "conforming": "Wir übertragen die Änderungen."
+    },
+    "passiv": {
+      "violating": "Es wird verarbeitet.",
+      "conforming": "Das System verarbeitet die Daten."
+    },
+    "passiv-modal": {
+      "violating": "Der Text kann geändert werden.",
+      "conforming": "Der Text lässt sich schreiben."
+    },
+    "compound": {
+      "violating": "Das 3 Wege Ventil öffnet.",
+      "conforming": "Das 3-Wege-Ventil öffnet."
+    },
+    "sentence-length": {
+      "violating": "Dieser Satz ist absichtlich sehr lang und enthält viele Wörter damit die Wortzahl über die Grenze von fünfundzwanzig Wörtern steigt und die Prüfung wie erwartet auslöst.",
+      "conforming": "Das System verarbeitet die Daten. Der Benutzer gibt den Text ein. Wir öffnen das 3-Wege-Ventil."
+    },
+    "floskel": {
+      "violating": "Im Allgemeinen funktioniert das System.",
+      "conforming": "Das System funktioniert ohne Einschränkung."
+    }
+  },
+  "meta": {
+    "nonProsePath": "sample.ts",
+    "shortPath": "short.md",
+    "shortContent": "Short text."
+  }
+}

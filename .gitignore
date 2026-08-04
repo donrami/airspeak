@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Speckit local machinery (not shipped)
+.specify/
+.omp/
+
+# Build artifacts
+dist/
+*.tgz
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
