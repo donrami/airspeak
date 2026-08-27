@@ -1,9 +1,19 @@
 # Dependencies
 node_modules/
 
-# Speckit local machinery (not shipped)
+# Tooling/planning artifacts (not shipped)
+specs/
 .specify/
 .omp/
+.claude/
+.claude-plugin/
+.omp-plugin/
+.idea/
+.vscode/
+*.code-workspace
+*.local
+*.orig
+*.rej
 
 # Build artifacts
 dist/

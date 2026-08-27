@@ -7,7 +7,7 @@ Automatic writing-style linting for Markdown prose, built for AI agents.
 
 The addon has two parts:
 
-1. **Lint extension** (omp): checks every `*.md` / `*.mdx` file you write or edit and reports violations with rule references, so the agent can self-correct.
+1. **Lint extension** (omp): checks every `*.md` / `*.mdx` file you write or edit and reports violations with rule references.
 2. **Writing-style skill** (any Agent-Skills-capable agent): the full rule guidance, installable in Claude Code, Cursor, GitHub Copilot, and others.
 
 ## Install
@@ -15,7 +15,7 @@ The addon has two parts:
 ### omp (marketplace)
 
 ```sh
-omp plugin marketplace add <owner>/ste-writing
+omp plugin marketplace add donrami/ste-writing
 omp plugin install ste-writing@ste-writing
 ```
 
@@ -31,7 +31,7 @@ pi install npm:ste-writing
 
 Install the `skills/ste-writing/` directory per your agent's skill flow:
 
-- Claude Code: `/plugin marketplace add <owner>/ste-writing` then `/plugin install ste-writing@ste-writing`, or copy `skills/ste-writing` into your skills directory.
+- Claude Code: `/plugin marketplace add donrami/ste-writing` then `/plugin install ste-writing@ste-writing`, or copy `skills/ste-writing` into your skills directory.
 - Cursor / GitHub Copilot: copy `skills/ste-writing/` into the agent's skills folder.
 
 ## How it works
@@ -67,7 +67,7 @@ Rule families, German:
 
 ## Configure
 
-**Modes**. The shipped default is `warn`: violations are reported, writes always succeed. For hard enforcement, flip the `MODE` constant in `src/index.ts` to `"block"` and rebuild the package. In block mode, a write with violations is rejected before it executes, with the violation list and the kill-switch hint in the error.
+**Modes**. The shipped default is `warn`: violations are reported, writes always succeed. For hard enforcement, flip the `MODE` constant in `src/index.ts` to `"block"` and rebuild the package. In block mode, a write with violations is rejected before it executes. The error carries the violation list and the kill-switch hint.
 
 **Kill switch**. To disable linting without uninstalling:
 
@@ -94,16 +94,16 @@ omp plugin upgrade ste-writing@ste-writing
 
 ## Standards and license
 
-- ASD-STE100 Issue 9 (January 2025), Simplified Technical English. STE is an English-only controlled language; the German mode follows the German standards below instead.
+- ASD-STE100 Issue 9 (January 2025), Simplified Technical English. STE is an English-only controlled language. The German mode follows the German standards below instead.
 - DIN EN IEC/IEEE 82079-1:2019 Edition 2, "Preparation of information for use (instructions for use) of products".
 - tekom, "Deutsch für Technische Kommunikation – Regelbasiertes Schreiben".
 
-This project is released under the MIT license. The standards above are referenced for rule semantics; no standard text is reproduced.
+This project is released under the MIT license. The standards above are referenced for rule semantics. No standard text is reproduced.
 
 ## Known limitations
 
 - HTML comments and template boilerplate (for example Given/When/Then scaffolding) are counted as prose and can produce false positives.
-- German compound-word detection is regex-based and cannot count morphemes; very long compounds are flagged for human review.
+- German compound-word detection is regex-based and cannot count morphemes. Very long compounds are flagged for human review.
 - The mechanical rules are a subset of the full standards. The skill document carries the full rule guidance for agents.
 
 ## Contribute

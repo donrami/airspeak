@@ -1,11 +1,11 @@
 ---
 name: ste-writing
-description: Write technical prose — docs, READMEs, PRs, error messages, runbooks, release notes, changelogs. English follows ASD-STE100 Issue 9; German follows DIN EN IEC/IEEE 82079-1:2019 + tekom regelbasiert. Auto-detects language from the user's prompt and the file path. NEVER use for marketing copy, essays, voice work, or anything that needs a personality — these specs strip voice on purpose.
+description: Write and review technical documentation — docs, READMEs, PR descriptions, error messages, runbooks, release notes, changelogs. English follows ASD-STE100 Issue 9; German follows DIN EN IEC/IEEE 82079-1:2019 + tekom. Use when the user writes or edits technical prose, API docs, or any document where clarity and brevity matter — even if they don't explicitly mention a style guide or simplification. Never use for marketing copy, essays, creative writing, or anything that needs a distinctive voice. These specs intentionally strip voice.
 license: MIT
 compatibility: omp, Claude Code, Cursor, GitHub Copilot, and any agent supporting the Agent Skills spec
 metadata:
   version: "1.0.0"
-  author: omp
+  author: Rami Abu-Hamad
   en-spec: ASD-STE100 Issue 9 (Jan 2025)
   de-specs: DIN EN IEC/IEEE 82079-1:2019 Edition 2; tekom "Deutsch für Technische Kommunikation – Regelbasiertes Schreiben"
 globs:

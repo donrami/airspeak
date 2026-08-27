@@ -32,7 +32,3 @@ bun test
 ## Release process
 
 See `CHANGELOG.md` and the release-workflow contract in `specs/001-publish-ste-addon/contracts/release-workflow.md`. Every release bumps the version in six places: both catalog files, `plugin/package.json`, `plugin/skills/ste-writing/SKILL.md` (`metadata.version`), the changelog, and the git tag.
-
-## Placeholders before first publish
-
-`owner.name`, `homepage`, and `repository` in both catalogs, the `LICENSE` copyright line, and the changelog release link still carry placeholders. Replace them with the real maintainer identity before pushing the public release.

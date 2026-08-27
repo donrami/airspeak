@@ -12,4 +12,4 @@ All notable changes to this project are documented in this file. The format foll
 - Portable writing-style skill (`skills/ste-writing/`) for any Agent-Skills-capable agent.
 - Per-rule automated tests and a parity baseline that pins rule behavior.
 
-[1.0.0]: https://github.com/your-username/ste-writing/releases/tag/v1.0.0
+[1.0.0]: https://github.com/donrami/ste-writing/releases/tag/v1.0.0
