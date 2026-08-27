@@ -25,32 +25,6 @@
       "conforming": "The system has one mode — warning — for reporting violations."
     }
   },
-  "de": {
-    "calque": {
-      "violating": "Wir committen die Änderungen.",
-      "conforming": "Wir übertragen die Änderungen."
-    },
-    "passiv": {
-      "violating": "Es wird verarbeitet.",
-      "conforming": "Das System verarbeitet die Daten."
-    },
-    "passiv-modal": {
-      "violating": "Der Text kann geändert werden.",
-      "conforming": "Der Text lässt sich schreiben."
-    },
-    "compound": {
-      "violating": "Das 3 Wege Ventil öffnet.",
-      "conforming": "Das 3-Wege-Ventil öffnet."
-    },
-    "sentence-length": {
-      "violating": "Dieser Satz ist absichtlich sehr lang und enthält viele Wörter damit die Wortzahl über die Grenze von fünfundzwanzig Wörtern steigt und die Prüfung wie erwartet auslöst.",
-      "conforming": "Das System verarbeitet die Daten. Der Benutzer gibt den Text ein. Wir öffnen das 3-Wege-Ventil."
-    },
-    "floskel": {
-      "violating": "Im Allgemeinen funktioniert das System.",
-      "conforming": "Das System funktioniert ohne Einschränkung."
-    }
-  },
   "meta": {
     "nonProsePath": "sample.ts",
     "shortPath": "short.md",

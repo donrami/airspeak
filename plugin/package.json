@@ -1,7 +1,7 @@
 {
   "name": "ste-writing",
   "version": "1.0.0",
-  "description": "Writing-style linting for Markdown prose. English: ASD-STE100 Issue 9. German: DIN EN IEC/IEEE 82079-1 + tekom. omp extension + portable Agent Skills.",
+  "description": "Writing-style linting for Markdown prose. English: ASD-STE100 Issue 9. omp extension + portable Agent Skills.",
   "license": "MIT",
   "type": "module",
   "exports": "./src/index.ts",

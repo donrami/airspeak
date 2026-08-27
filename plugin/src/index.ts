@@ -1,31 +1,32 @@
 // ste-lint — mechanical prose linter for technical writing.
 // Runs on tool_result for write/edit/multi_edit to *.md/*.mdx files.
 // English: ASD-STE100 Issue 9 mechanical subset.
-// German:  DIN EN IEC/IEEE 82079-1 + tekom regelbasiert.
 //
 // MODE: warn (default) — appends a violation list to the tool result so the
-//                  model self-corrects on the next turn. Set to "block" below
-//                  to stop writes with violations before they execute.
+//                  model self-corrects on the next turn. Set to "block" for
+//                  hard enforcement that rejects violating writes before they
+//                  execute.
 //
-// KILL SWITCH:
-//   - Add `disabledExtensions: ["ste-lint"]` to ~/.omp/agent/config.yml, or
-//   - Delete this file, or
-//   - Comment out the pi.on("tool_result", ...) call.
+// MODE is the shipped default; downstream forks can flip it without touching
+// call sites because tool_call and tool_result both read the same source.
 
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 
-// Only lint docs; never lint code, configs, or non-prose files.
-export const PROSE_GLOBS = /\.(md|mdx|markdown)$/i;
-// Path detection: `de/foo.md`, `*.de.md`, `/de/`, `/de_DE/`, `/german/`.
-// Hyphens inside compounds MUST survive `stripMarkdown` for B-rule checks.
-export const GERMAN_PATH =
-  /(?:^|\/)(de|DE|german|de_DE)(?=\/)|\.(de|DE)\.(md|mdx|markdown)$/;
+// --- Path / glob filtering ---------------------------------------------------
 
-// Lint thresholds (source constants, shared by handlers and tests).
+// Prose files the linter cares about. Mirrors the skill's `globs` so the
+// extension and the portable skill agree on scope.
+export const PROSE_GLOBS =
+  /\.(md|mdx|markdown)$|\/(README|CHANGELOG|RELEASE|errors|runbooks)(\.[a-z]+)?\/?$/i;
+
+// --- Lint thresholds (source constants, shared by handlers and tests) -------
+
 export const MAX_WORDS_DESCRIPTIVE = 25;
 export const MAX_WORDS_PROCEDURAL = 20;
 export const MAX_EM_DASH_PER_PARAGRAPH = 1;
 export const MIN_PARAGRAPH_WORDS_FOR_DASH_CHECK = 30;
+
+// --- English rules -----------------------------------------------------------
 
 // Banned vocabulary (English). Static lookup → Record, not Set.
 const EN_BANNED: Record<string, true> = {
@@ -55,26 +56,10 @@ const EN_NOMINALIZATIONS = [
   /\bprovide\s+assistance\b/gi,
 ];
 
-const DE_BANNED_CALQUES = [
-  /\bbrechen\b/gi, /\bgefangen\b/gi, /\breturnen\b/gi, /\btriggern\b/gi,
-  /\bfailen\b/gi, /\bhitten\b/gi, /\bchecken\b/gi, /\bpushen\b/gi,
-  /\bpullen\b/gi, /\bcommitten\b/gi,
-];
-
-// German compound-word pattern: digit + word, unit + word, acronym + word (B 104-110).
-const DE_COMPOUND_NO_HYPHEN = [
-  /(?<![A-Za-zäöüÄÖÜß-])(\d+(?:[.,]\d+)?)\s?([A-ZÄÖÜ][a-zäöüß]+)/g,
-  /(?<![A-Za-zäöüÄÖÜß-])(kg|mm|cm|m|km|mg|g|ml|l|hz|khz|mhz|ghz|v|kv|ma|a|ω|ohm)\s?([A-ZÄÖÜ][a-zäöüß]+)/g,
-  /(?<![A-Za-zäöüÄÖÜß-])([A-Z]{2,})\s?([A-Z][a-zäöüß]+)/g,
-];
-
-const DE_VORGANGSPASSIV = /\b(es\s+)?(wird|werden|wurde|wurden)\s+[a-zäöüß]+t\b(?!\s+von)/gi;
-const DE_PASSIV_MODAL = /\b(kann|muss|soll|will|möchte)\s+[a-zäöüß]+t\s+werden\b/gi;
 const EM_DASH = /—/g;
-const FLOSKELN = /\b(im Allgemeinen|grundsätzlich|prinzipiell|in der Regel|eigentlich|gewissermaßen|im Grunde genommen)\b/gi;
 
 // Strip markdown formatting, but PRESERVE hyphens — they are semantically
-// required for B-rule (compound-word) checks in German.
+// required for English compound-noun checks.
 export function stripMarkdown(s: string): string {
   return s
     .replace(/```[\s\S]*?```/g, " ")
@@ -85,15 +70,8 @@ export function stripMarkdown(s: string): string {
     .replace(/https?:\/\/\S+/g, " ");
 }
 
-export function detectGerman(text: string): boolean {
-  const sample = text.slice(0, 2000).toLowerCase();
-  const deHits = (sample.match(/\b(der|die|das|und|ist|sind|nicht|werden|wurde|auch|ein|eine|zu|mit|auf|für)\b/g) || []).length;
-  const enHits = (sample.match(/\b(the|and|is|are|was|not|with|for|that|this|have|has)\b/g) || []).length;
-  return deHits > enHits * 1.4;
-}
-
 export function wordCount(s: string): number {
-  return s.split(/\s+/).filter((w) => w.length > 0 && /[a-zA-ZäöüÄÖÜß0-9]/.test(w)).length;
+  return s.split(/\s+/).filter((w) => w.length > 0 && /[a-zA-Z0-9]/.test(w)).length;
 }
 
 // Split into sentences, handling common abbreviations (e.g., i.e., Mr., Dr.).
@@ -101,7 +79,7 @@ export function splitSentences(text: string): string[] {
   const protectedText = text
     .replace(/\b(e\.g|i\.e|Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc)\./gi, "$1<DOT>");
   return protectedText
-    .split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ])/)
+    .split(/(?<=[.!?])\s+(?=[A-Z])/)
     .map((s) => s.replace(/<DOT>/g, ".").trim())
     .filter((s) => s.length > 0);
 }
@@ -162,56 +140,6 @@ export function checkEnglish(text: string): string[] {
   return issues;
 }
 
-export function checkGerman(text: string): string[] {
-  const issues: string[] = [];
-  const prose = stripMarkdown(text);
-
-  // Em-dash ban (82079-1 / german-readme-style).
-  const emCount = (prose.match(EM_DASH) || []).length;
-  if (emCount > 0) {
-    issues.push(`[82079-1 / german-readme-style] ${emCount} em-dash(es) — banned in DE user-facing prose. Use Komma, Punkt, Doppelpunkt, or runde Klammern.`);
-  }
-
-  // Denglish calques.
-  for (const re of DE_BANNED_CALQUES) {
-    const m = prose.match(re);
-    if (m) issues.push(`[Denglish] calque "${m[0]}" — use German form.`);
-  }
-
-  // Vorgangspassiv (tekom S 501).
-  const vp = prose.match(DE_VORGANGSPASSIV);
-  if (vp) issues.push(`[tekom S 501] Vorgangspassiv: "${vp[0]}" — make the actor explicit, use active voice.`);
-
-  // Passiv mit Modalverben (tekom S 503).
-  const pm = prose.match(DE_PASSIV_MODAL);
-  if (pm) issues.push(`[tekom S 503] Passiv mit Modalverb: "${pm[0]}" — use imperative or "man kann X".`);
-
-  // Compound-word violations (tekom B 104-110). Run on the ORIGINAL text
-  // (not stripped) so existing hyphens between digit/acronym/unit and the
-  // following Capitalized word are visible.
-  for (const re of DE_COMPOUND_NO_HYPHEN) {
-    re.lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-      issues.push(`[tekom B 104-110] compound without Bindestrich: "${m[0]}" — add hyphen.`);
-    }
-  }
-
-  // Sentence length (82079-1 minimalism).
-  for (const s of splitSentences(prose)) {
-    const wc = wordCount(s);
-    if (wc > MAX_WORDS_DESCRIPTIVE) {
-      issues.push(`[82079-1 minimalism] sentence has ${wc} words — consider splitting.`);
-    }
-  }
-
-  // Floskeln (tekom L 112).
-  const fl = prose.match(FLOSKELN);
-  if (fl) issues.push(`[tekom L 112] Floskel: "${fl[0]}" — cut or replace with a concrete condition.`);
-
-  return issues;
-}
-
 // Pure decision for hard-enforcement mode: returns the block reason when the
 // write must be rejected, or null when it may proceed. Wired into the
 // tool_call handler with the shipped MODE; exported so tests can exercise
@@ -225,13 +153,11 @@ export function buildBlockReason(
   if (!PROSE_GLOBS.test(filePath)) return null;
   if (content.length < 40) return null;
 
-  const isDe = GERMAN_PATH.test(filePath) || detectGerman(content);
-  const issues = isDe ? checkGerman(content) : checkEnglish(content);
+  const issues = checkEnglish(content);
   if (issues.length === 0) return null;
 
-  const lang = isDe ? "German (DIN 82079-1 + tekom)" : "English (ASD-STE100)";
   const preview = issues.slice(0, 5).join(" | ");
-  return `ste-lint (${lang}) blocked this write: ${issues.length} violation(s): ${preview}. Fix the violations or disable the linter with disabledExtensions: ["ste-lint"].`;
+  return `ste-lint (English mode: ASD-STE100) blocked this write: ${issues.length} violation(s): ${preview}. Fix the violations or disable the linter with disabledExtensions: ["ste-lint"].`;
 }
 
 // Shared input extraction for write/edit/multi_edit tool events.
@@ -258,13 +184,10 @@ export default function steLint(pi: ExtensionAPI) {
       if (!filePath || !PROSE_GLOBS.test(filePath)) return;
       if (typeof content !== "string" || content.length < 40) return;
 
-      const isDe = GERMAN_PATH.test(filePath) || detectGerman(content);
-      const issues = isDe ? checkGerman(content) : checkEnglish(content);
+      const issues = checkEnglish(content);
       if (issues.length === 0) return;
 
-      const header = isDe
-        ? `## ste-lint (German mode: DIN 82079-1 + tekom) — ${issues.length} issue(s)`
-        : `## ste-lint (English mode: ASD-STE100) — ${issues.length} issue(s)`;
+      const header = `## ste-lint (English mode: ASD-STE100) — ${issues.length} issue(s)`;
       const body = issues.map((i) => `- ${i}`).join("\n");
       const footer = `\nDisable linter: add \`disabledExtensions: ["ste-lint"]\` to ~/.omp/agent/config.yml.`;
       const annotation = `\n\n---\n${header}\n${body}${footer}\n`;
@@ -292,20 +215,14 @@ export default function steLint(pi: ExtensionAPI) {
     }
   });
 
-  // Hard-enforcement mode: veto the write BEFORE it executes.
   pi.on("tool_call", (event) => {
-    try {
-      const toolName = String(event.toolName ?? "");
-      if (!["write", "edit", "multi_edit"].includes(toolName)) return;
+    const toolName = String(event.toolName ?? "");
+    if (!["write", "edit", "multi_edit"].includes(toolName)) return;
 
-      const { filePath, content } = extractWriteTarget(event.input);
-      if (typeof filePath !== "string" || typeof content !== "string") return;
+    const { filePath, content } = extractWriteTarget(event.input);
+    if (typeof filePath !== "string" || typeof content !== "string") return;
 
-      const reason = buildBlockReason(filePath, content, MODE);
-      if (reason) return { block: true, reason };
-    } catch (err) {
-      // Fail soft: never break the tool call on a linter error.
-      console.error("[ste-lint] tool_call handler failed", err);
-    }
+    const reason = buildBlockReason(filePath, content, MODE);
+    if (reason) return { block: true, reason };
   });
 }

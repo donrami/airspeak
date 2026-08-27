@@ -1,14 +1,26 @@
 # ste-writing
 
-Automatic writing-style linting for Markdown prose, built for AI agents.
-
-- **English**: ASD-STE100 Issue 9 (Simplified Technical English) — the controlled-language framework used in military and aircraft maintenance manuals.
-- **German**: DIN EN IEC/IEEE 82079-1:2019 (use of instructions for products) + tekom regelbasiertes Schreiben.
+Automatic writing-style linting for Markdown prose, built for AI agents. English follows ASD-STE100 Issue 9 (Simplified Technical English) — the controlled-language framework used in military and aircraft maintenance manuals.
 
 The addon has two parts:
 
 1. **Lint extension** (omp): checks every `*.md` / `*.mdx` file you write or edit and reports violations with rule references.
 2. **Writing-style skill** (any Agent-Skills-capable agent): the full rule guidance, installable in Claude Code, Cursor, GitHub Copilot, and others.
+
+## Contents
+
+- [Install](#install)
+- [How it works](#how-it-works)
+- [Configure](#configure)
+- [Uninstall](#uninstall)
+- [Update](#update)
+- [Standards and license](#standards-and-license)
+- [Known limitations](#known-limitations)
+- [Contribute](#contribute)
+
+## Requirements
+
+omp 16.4.4 or newer (see `package.json` peerDependencies).
 
 ## Install
 
@@ -45,9 +57,9 @@ After installation, the extension hooks every `write`, `edit`, and `multi_edit` 
 Disable linter: add `disabledExtensions: ["ste-lint"]` to ~/.omp/agent/config.yml.
 ```
 
-Language is auto-detected from the file path (`de/foo.md`, `foo.de.md`, `/de_DE/`, `/german/`) or, failing that, from the text. Code files, configs, and other non-prose files are never checked.
+Code files, configs, and other non-prose files are never checked.
 
-Rule families, English:
+Rule families:
 
 - Sentence length (STE 6.3 descriptions ≤ 25 words, STE 5.1 procedures ≤ 20)
 - Semicolons (STE 8.1)
@@ -55,15 +67,6 @@ Rule families, English:
 - Phrasal verbs
 - Banned marketing vocabulary
 - Em-dash density
-
-Rule families, German:
-
-- Vorgangspassiv (tekom S 501) and Passiv mit Modalverb (S 503)
-- Compound hyphen rules (tekom B 104-110)
-- Denglish calques
-- Sentence length (82079-1 minimalism)
-- Floskeln (tekom L 112)
-- Em-dashes (banned in DE user-facing prose)
 
 ## Configure
 
@@ -94,17 +97,14 @@ omp plugin upgrade ste-writing@ste-writing
 
 ## Standards and license
 
-- ASD-STE100 Issue 9 (January 2025), Simplified Technical English. STE is an English-only controlled language. The German mode follows the German standards below instead.
-- DIN EN IEC/IEEE 82079-1:2019 Edition 2, "Preparation of information for use (instructions for use) of products".
-- tekom, "Deutsch für Technische Kommunikation – Regelbasiertes Schreiben".
+- ASD-STE100 Issue 9 (January 2025), Simplified Technical English. STE is an English-only controlled language.
 
-This project is released under the MIT license. The standards above are referenced for rule semantics. No standard text is reproduced.
+This project is released under the MIT license. The standard above is referenced for rule semantics. No standard text is reproduced.
 
 ## Known limitations
 
 - HTML comments and template boilerplate (for example Given/When/Then scaffolding) are counted as prose and can produce false positives.
-- German compound-word detection is regex-based and cannot count morphemes. Very long compounds are flagged for human review.
-- The mechanical rules are a subset of the full standards. The skill document carries the full rule guidance for agents.
+- The mechanical rules are a subset of the full standard. The skill document carries the full rule guidance for agents.
 
 ## Contribute
 

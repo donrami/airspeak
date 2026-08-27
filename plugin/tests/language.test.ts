@@ -1,12 +1,7 @@
-// Language detection, glob filtering, and extension wiring tests.
+// Glob filtering and extension wiring tests.
 // The extension is exercised through a fake `pi` so no agent is needed.
 import { describe, expect, test } from "bun:test";
-import steLint, {
-  buildBlockReason,
-  detectGerman,
-  GERMAN_PATH,
-  PROSE_GLOBS,
-} from "../src/index.ts";
+import steLint, { buildBlockReason, PROSE_GLOBS } from "../src/index.ts";
 import { loadCorpus } from "./helpers.ts";
 
 const corpus = loadCorpus();
@@ -25,34 +20,6 @@ function makeFakePi() {
     },
   };
 }
-
-describe("GERMAN_PATH routing", () => {
-  const germanPaths = [
-    "docs/de/foo.md",
-    "de/foo.md",
-    "foo.de.md",
-    "german/notes.md",
-    "de_DE/help.md",
-    "docs/DE/README.md",
-  ];
-  const englishPaths = ["docs/en/foo.md", "foo.md", "src/main.ts", "docs/README.md"];
-
-  for (const p of germanPaths) test(`German path: ${p}`, () => expect(GERMAN_PATH.test(p)).toBe(true));
-  for (const p of englishPaths) test(`non-German path: ${p}`, () => expect(GERMAN_PATH.test(p)).toBe(false));
-});
-
-describe("detectGerman", () => {
-  test("German text dominates", () => {
-    expect(detectGerman("Der Benutzer gibt den Text ein und die Daten werden verarbeitet.")).toBe(true);
-  });
-  test("English text dominates", () => {
-    expect(detectGerman("The user enters the text and the data is processed by the system.")).toBe(false);
-  });
-  test("mixed text routes by dominance", () => {
-    expect(detectGerman("Die Daten werden verarbeitet und das Ergebnis wird angezeigt. The system then shows the result.")).toBe(true);
-    expect(detectGerman("The system processes the data and shows the result. Der Benutzer gibt den Text ein.")).toBe(false);
-  });
-});
 
 describe("PROSE_GLOBS filtering", () => {
   for (const p of ["a.md", "b.mdx", "c.markdown", "path/to/README.md"]) {
@@ -143,10 +110,5 @@ describe("buildBlockReason (block mode decision)", () => {
 
   test("block mode never blocks non-prose files", () => {
     expect(buildBlockReason("src/main.ts", corpus.en.banned.violating, "block")).toBeNull();
-  });
-
-  test("block mode routes German content to German checks", () => {
-    const reason = buildBlockReason("docs/example.md", corpus.de["sentence-length"].violating, "block");
-    expect(reason).toContain("German");
   });
 });

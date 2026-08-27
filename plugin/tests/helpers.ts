@@ -1,7 +1,7 @@
 // Shared test helpers: corpus loading, check dispatch, baseline comparison.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { checkEnglish, checkGerman } from "../src/index.ts";
+import { checkEnglish } from "../src/index.ts";
 
 export interface SamplePair {
   violating: string;
@@ -10,7 +10,6 @@ export interface SamplePair {
 
 export interface Corpus {
   en: Record<string, SamplePair>;
-  de: Record<string, SamplePair>;
   meta: { nonProsePath: string; shortPath: string; shortContent: string };
 }
 
@@ -24,6 +23,6 @@ export function loadBaseline(): Record<string, Record<string, { violating: strin
   return JSON.parse(readFileSync(join(FIXTURES, "baseline.json"), "utf8"));
 }
 
-export function runChecks(lang: "en" | "de", text: string): string[] {
-  return lang === "en" ? checkEnglish(text) : checkGerman(text);
+export function runChecks(lang: "en", text: string): string[] {
+  return checkEnglish(text);
 }

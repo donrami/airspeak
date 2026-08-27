@@ -1,19 +1,44 @@
 # ste-writing
 
-Automatic writing-style linting for Markdown prose, built for AI agents. English follows ASD-STE100 Issue 9, the controlled language of old military and aircraft manuals. German follows DIN EN IEC/IEEE 82079-1 and tekom.
+Automatic writing-style linting for Markdown prose, built for AI agents. English follows ASD-STE100 Issue 9 (Simplified Technical English), the controlled language of military aircraft maintenance manuals.
 
-Two parts, one package:
+## Contents
 
-- **Lint extension for omp**: checks every Markdown write and edit and reports violations with rule references.
-- **Portable skill**: the full rule guidance, installable on any Agent-Skills-capable agent.
+- [Why this exists](#why-this-exists)
+- [What it does](#what-it-does)
+- [Install](#install)
+- [Documentation](#documentation)
+- [License](#license)
 
 ## Why this exists
 
 This project started with a video: [The cure for AI slop is a 1986 aircraft manual](https://www.youtube.com/watch?v=uJblcC4lKYw) by [Vusal Ismayilov](https://www.youtube.com/@woosal1337). The claim in it stuck: the fix for AI-generated prose is not banning a few words. It is a controlled language: ASD-STE100, the writing standard built for aircraft mechanics in 1986. Every sentence must be unambiguous enough that a mistake costs a human life.
 
-That framing is why the rules here are mechanical, not tasteful. Instead of "write better", the linter enforces a small set of checkable constraints. The rules check sentence length, one idea per sentence, banned semicolons, marketing vocabulary, and em-dash stacking. Those constraints make agent output predictable and reviewable. They also make it more readable for humans.
+That framing is why the rules here are mechanical, not tasteful. Instead of "write better", the linter enforces a small set of checkable constraints. The rules check sentence length, one idea per sentence, banned semicolons, banned nominalizations, banned marketing vocabulary, and em-dash stacking. Those constraints make agent output predictable and reviewable. They also make it more readable for humans.
 
-The German mode applies the same idea to the German standards: DIN EN IEC/IEEE 82079-1 and tekom regelbasiertes Schreiben. These are the standards behind technical documentation in German.
+## What it does
+
+The extension lints every Markdown write and edit, then appends a violation list to the tool result so the agent self-corrects on the next turn. English follows ASD-STE100: sentences at most 25 words, no semicolons, no nominalizations, no phrasal verbs, no marketing vocabulary, at most one em-dash per paragraph.
+
+| Language | Before — typical agent output | After — rewritten to the rules |
+|---|---|---|
+| **English** | This change updates the authentication service so that it can handle token refresh more efficiently. We utilize a cache to store session data, which means we don't have to reach out to the database on every request; this is a crucial improvement because the previous implementation was causing significant performance issues. Let me walk you through the details — the new flow leverages a background job — and make sure you spin up the service to test it. | The change updates the authentication service. It caches session data so requests do not query the database. The previous implementation caused performance issues. Test the service after you start it. |
+
+### See it in action
+
+Ask your agent to write this sentence:
+
+> The system utilizes a seamless and robust architecture.
+
+The linter flags it immediately:
+
+```text
+- [anti-slop] banned "seamless" — cut or replace with a concrete spec.
+- [anti-slop] banned "robust" — cut or replace with a concrete spec.
+- [STE] phrasal verb "utilize" — replace with a precise verb.
+```
+
+Rewrite it as "The system stores data in a cache." and the write passes clean.
 
 ## Install
 
@@ -86,12 +111,6 @@ or copy the folder to `~/.gemini/skills/ste-writing/` (user) or `.gemini/skills/
 
 Copy `plugin/skills/ste-writing/` (the folder containing `SKILL.md`) into the agent's skills directory. The skill follows the [Agent Skills specification](https://agentskills.io). Every harness listed above accepts the same file unchanged.
 
-## What it catches
-
-English: sentence length, semicolons, nominalizations, phrasal verbs, marketing vocabulary, em-dash density.
-
-German: passive voice, compound hyphens, Denglish calques, sentence length, filler phrases, em-dashes.
-
 ## Documentation
 
 - [Full README](plugin/README.md): install, configure, disable, uninstall, standards.
@@ -100,4 +119,4 @@ German: passive voice, compound hyphens, Denglish calques, sentence length, fill
 
 ## License
 
-MIT. The rule semantics reference ASD-STE100 Issue 9, DIN EN IEC/IEEE 82079-1:2019, and tekom. No standard text is reproduced.
+MIT. The rule semantics reference ASD-STE100 Issue 9. No standard text is reproduced.

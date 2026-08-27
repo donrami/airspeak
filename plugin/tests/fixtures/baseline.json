@@ -36,43 +36,5 @@
       ],
       "conforming": []
     }
-  },
-  "de": {
-    "calque": {
-      "violating": [
-        "[Denglish] calque \"committen\" — use German form."
-      ],
-      "conforming": []
-    },
-    "passiv": {
-      "violating": [
-        "[tekom S 501] Vorgangspassiv: \"Es wird verarbeitet\" — make the actor explicit, use active voice."
-      ],
-      "conforming": []
-    },
-    "passiv-modal": {
-      "violating": [
-        "[tekom S 503] Passiv mit Modalverb: \"kann geändert werden\" — use imperative or \"man kann X\"."
-      ],
-      "conforming": []
-    },
-    "compound": {
-      "violating": [
-        "[tekom B 104-110] compound without Bindestrich: \"3 Wege\" — add hyphen."
-      ],
-      "conforming": []
-    },
-    "sentence-length": {
-      "violating": [
-        "[82079-1 minimalism] sentence has 26 words — consider splitting."
-      ],
-      "conforming": []
-    },
-    "floskel": {
-      "violating": [
-        "[tekom L 112] Floskel: \"Im Allgemeinen\" — cut or replace with a concrete condition."
-      ],
-      "conforming": []
-    }
   }
 }

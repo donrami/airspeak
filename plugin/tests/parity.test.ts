@@ -7,14 +7,15 @@ import { loadBaseline, loadCorpus, runChecks } from "./helpers.ts";
 const baseline = loadBaseline();
 const corpus = loadCorpus();
 
-for (const lang of ["en", "de"] as const) {
-  describe(`parity: ${lang}`, () => {
-    for (const family of Object.keys(corpus[lang])) {
-      test(`${family} matches the baseline exactly`, () => {
-        const samples = corpus[lang][family];
-        expect(runChecks(lang, samples.violating)).toEqual(baseline[lang][family].violating);
-        expect(runChecks(lang, samples.conforming)).toEqual(baseline[lang][family].conforming);
-      });
-    }
+for (const family of Object.keys(corpus.en)) {
+  describe(`parity: en.${family}`, () => {
+    test("violating matches baseline exactly", () => {
+      const samples = corpus.en[family];
+      expect(runChecks("en", samples.violating)).toEqual(baseline.en[family].violating);
+    });
+    test("conforming stays silent", () => {
+      const samples = corpus.en[family];
+      expect(runChecks("en", samples.conforming)).toEqual(baseline.en[family].conforming);
+    });
   });
 }

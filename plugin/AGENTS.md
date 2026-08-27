@@ -9,17 +9,15 @@ Guidance for agents working on this repository.
 ## Layout
 
 - `plugin/src/index.ts` — the lint extension. Pure check functions at module scope (exported and unit-tested); `steLint(pi)` is the default export the agent loads.
-- `plugin/skills/ste-writing/SKILL.md` — the portable writing-style skill.
-- `plugin/tests/` — rule tests, language/wiring tests, parity test, packaging (install lifecycle) test.
-- `plugin/tests/fixtures/` — corpus.json (violating + conforming samples per check family) and baseline.json (captured issue lists).
+- `plugin/skills/ste-writing/SKILL.md` — the portable Agent Skills document (frontmatter + body). Same content as the bundled skill.
+- `plugin/tests/` — `bun test` runner. Fixtures live in `tests/fixtures/` (`corpus.json` for samples, `baseline.json` for the pinned issue lists).
+- `specs/001-publish-ste-addon/` — design / data-model / task artifacts. Gitignored, not shipped.
 
-## Rules of the repo
+## Conventions
 
-- **Parity is load-bearing.** `baseline.json` pins the exact issue lists for the fixture corpus. Any change to check behavior must update the baseline consciously: run `bun test` in `plugin/`, inspect failures, and if the new behavior is intended, regenerate `baseline.json` with the same script that produced it (importing `checkEnglish`/`checkGerman` over corpus.json — see git history) and document why in the changelog.
-- **Zero runtime dependencies.** The linter is regex-only. Do not add a runtime dependency.
-- **Fail soft.** A linter error must never break a write or the agent. Both event handlers are wrapped in try/catch; keep it that way.
-- **Non-prose files are never linted.** `PROSE_GLOBS` gates everything.
-- **Language routing.** German by path (`GERMAN_PATH`), else by text dominance (`detectGerman`), else English. Never run STE German; German mode follows 82079-1 + tekom.
+- One language: English (ASD-STE100 Issue 9 mechanical subset).
+- Rules are mechanical and machine-checkable. Word lists and string constants live at the top of `src/index.ts`.
+- Thresholds are exported so tests can read them; do not hard-code duplicates.
 
 ## Testing
 
