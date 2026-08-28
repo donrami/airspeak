@@ -40,7 +40,7 @@ pi install npm:airspeak
 
 ### Other agents (skill only)
 
-Per-harness install commands for Claude Code, Cursor, GitHub Copilot, OpenAI Codex, and Google Gemini CLI: see [Install in the root README](../README.md#install).
+Per-harness install commands for Claude Code, Cursor, GitHub Copilot, OpenAI Codex, and Google Gemini CLI: see [Install in the root README](https://github.com/donrami/airspeak/blob/main/README.md#install).
 
 ## How it works
 
@@ -62,7 +62,7 @@ Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.ym
 
 Code files, configs, and other non-prose files are never checked.
 
-The full rule-family table (with STE anchors) and a [before/after example](../README.md#what-it-does) live in the root README.
+The full rule-family table (with STE anchors) and a [before/after example](https://github.com/donrami/airspeak/blob/main/README.md#what-it-does) live in the root README.
 
 ## Configure
 
@@ -106,4 +106,4 @@ This project is released under the MIT license. The standard above is referenced
 
 ## Contribute
 
-See [AGENTS.md](AGENTS.md) for repo conventions and the release process in [CHANGELOG.md](CHANGELOG.md).
+See [AGENTS.md](https://github.com/donrami/airspeak/blob/main/plugin/AGENTS.md) for repo conventions and the release process in [CHANGELOG.md](https://github.com/donrami/airspeak/blob/main/plugin/CHANGELOG.md).
