@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-08-28
+
+### Added
+
+- Agentic clarity release: ten writing-style rule families for unambiguous, low-jargon English — sentence-length, semicolon, nominalization, phrasal-verb, banned-vocab, em-dash cap, contraction, missing-that, latin-abbrev, and gendered-pronoun.
+- Honest positioning: the rules are inspired by ASD-STE100 Issue 9, never presented as STE compliance; the em-dash cap is labeled `[style]` (STE allows the em-dash) and banned-vocab stays `[anti-slop]` (no dictionary claim).
+- English-only scope: the non-English rule sets are removed.
+
 ## [1.0.0] - 2026-08-05
 
 ### Added

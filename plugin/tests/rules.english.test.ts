@@ -12,9 +12,13 @@ const MARKERS: Record<string, RegExp> = {
   "sentence-length": /\[STE (6\.3|5\.1)\]/,
   semicolon: /\[STE 8\.1\]/,
   nominalization: /\[STE 3\.7\]/,
-  "phrasal-verb": /phrasal verb/,
+  "phrasal-verb": /\[STE 9\.3\]/,
   banned: /anti-slop/,
-  "em-dash": /em-dashes/,
+  "em-dash": /\[style\]/,
+  contraction: /\[STE 4\.2\]/,
+  "missing-that": /\[GR-1\]/,
+  "latin-abbrev": /\[GR-6\]/,
+  "gendered-pronoun": /\[GR-7\]/,
 };
 
 for (const [family, samples] of Object.entries(corpus.en)) {

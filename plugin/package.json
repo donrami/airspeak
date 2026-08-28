@@ -1,6 +1,6 @@
 {
   "name": "ste-writing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Writing-style linting for Markdown prose. English: ASD-STE100 Issue 9. omp extension + portable Agent Skills.",
   "license": "MIT",
   "type": "module",
@@ -19,7 +19,7 @@
     ]
   },
   "scripts": {
-    "test": "bun test tests/",
+    "test": "bun test --timeout=120000 tests/",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

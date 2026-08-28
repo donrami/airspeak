@@ -27,6 +27,12 @@ bun run typecheck
 bun test
 ```
 
+The packaging smoke tests spawn the real `omp` CLI and take ~20–30s per
+install. bun 1.4 ignores bunfig `[test]` timeout keys, so the `--timeout`
+flag lives in the `test` script — run `bun run test` (or `bun test
+--timeout=120000`), not bare `bun test`, or the packaging suite dies at the
+5s default.
+
 ## Release process
 
 See `CHANGELOG.md` and the release-workflow contract in `specs/001-publish-ste-addon/contracts/release-workflow.md`. Every release bumps the version in six places: both catalog files, `plugin/package.json`, `plugin/skills/ste-writing/SKILL.md` (`metadata.version`), the changelog, and the git tag.

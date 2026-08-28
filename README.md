@@ -1,6 +1,6 @@
 # ste-writing
 
-Automatic writing-style linting for Markdown prose, built for AI agents. English follows ASD-STE100 Issue 9 (Simplified Technical English), the controlled language of military aircraft maintenance manuals.
+Automatic writing-style linting for Markdown prose, built for AI agents. English rules inspired by ASD-STE100 Issue 9 (Simplified Technical English).
 
 ## Contents
 
@@ -14,31 +14,50 @@ Automatic writing-style linting for Markdown prose, built for AI agents. English
 
 This project started with a video: [The cure for AI slop is a 1986 aircraft manual](https://www.youtube.com/watch?v=uJblcC4lKYw) by [Vusal Ismayilov](https://www.youtube.com/@woosal1337). The claim in it stuck: the fix for AI-generated prose is not banning a few words. It is a controlled language: ASD-STE100, the writing standard built for aircraft mechanics in 1986. Every sentence must be unambiguous enough that a mistake costs a human life.
 
-That framing is why the rules here are mechanical, not tasteful. Instead of "write better", the linter enforces a small set of checkable constraints. The rules check sentence length, one idea per sentence, banned semicolons, banned nominalizations, banned marketing vocabulary, and em-dash stacking. Those constraints make agent output predictable and reviewable. They also make it more readable for humans.
+That framing is why the rules here are mechanical, not tasteful. Instead of "write better", the linter enforces a small set of checkable constraints. The rules check sentence length, one idea per sentence, banned semicolons, nominalizations, phrasal verbs, marketing vocabulary, contractions, missing "that", Latin abbreviations, gendered pronouns, and em-dash stacking. Those constraints make agent output predictable and reviewable. They also make it more readable for humans.
+
+This is not an STE compliance tool. The goal is unambiguous, low-jargon English — the same goal STE was built for — not STE certification. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, with agentic-clarity caps where the standard and agent output diverge.
 
 ## What it does
 
-The extension lints every Markdown write and edit, then appends a violation list to the tool result so the agent self-corrects on the next turn. English follows ASD-STE100: sentences at most 25 words, no semicolons, no nominalizations, no phrasal verbs, no marketing vocabulary, at most one em-dash per paragraph.
+The extension lints every Markdown write and edit, then appends a violation list to the tool result so the agent self-corrects on the next turn. Ten rule families, each carrying the anchor it descends from:
 
-| Language | Before — typical agent output | After — rewritten to the rules |
-|---|---|---|
-| **English** | This change updates the authentication service so that it can handle token refresh more efficiently. We utilize a cache to store session data, which means we don't have to reach out to the database on every request; this is a crucial improvement because the previous implementation was causing significant performance issues. Let me walk you through the details — the new flow leverages a background job — and make sure you spin up the service to test it. | The change updates the authentication service. It caches session data so requests do not query the database. The previous implementation caused performance issues. Test the service after you start it. |
+| Family | Label |
+|---|---|
+| Sentence length (descriptions ≤ 25 words, procedures ≤ 20) | [STE 6.3] / [STE 5.1] |
+| Semicolons | [STE 8.1] |
+| Nominalizations | [STE 3.7] |
+| Phrasal verbs (with a replacement hint) | [STE 9.3] |
+| Banned marketing vocabulary | [anti-slop] |
+| Em-dash density (a style cap — STE allows the em-dash) | [style] |
+| Contractions | [STE 4.2] |
+| Missing "that" | [GR-1] |
+| Latin abbreviations | [GR-6] |
+| Gendered pronouns | [GR-7] |
 
-### See it in action
+### Before / after
 
-Ask your agent to write this sentence:
+Before — typical agent output:
 
-> The system utilizes a seamless and robust architecture.
+> The API retries failed requests automatically, e.g. when the database is down. Make sure the retry loop doesn't spin forever; utilize a bounded queue instead, and don't log the same error twice.
 
-The linter flags it immediately:
+The linter annotates the write:
 
 ```text
-- [anti-slop] banned "seamless" — cut or replace with a concrete spec.
-- [anti-slop] banned "robust" — cut or replace with a concrete spec.
-- [STE] phrasal verb "utilize" — replace with a precise verb.
+## ste-lint (English mode: ASD-STE100) — 7 issue(s)
+- [STE 8.1] 1 semicolon(s) in prose — STE bans semicolons. Replace with period or split.
+- [STE 9.3] phrasal verb "utilize" — use "use".
+- [anti-slop] banned "utilize" — cut or replace with a concrete spec.
+- [STE 4.2] contraction "doesn't" — write "does not".
+- [STE 4.2] contraction "don't" — write "do not".
+- [GR-1] add "that": "make sure that …".
+- [GR-6] Latin abbreviation "e.g." — use "for example".
+Disable linter: add `disabledExtensions: ["ste-lint"]` to ~/.omp/agent/config.yml.
 ```
 
-Rewrite it as "The system stores data in a cache." and the write passes clean.
+After — the corrected write passes clean:
+
+> The API retries failed requests automatically, for example when the database is down. Make sure that the retry loop does not spin forever. Use a bounded queue and do not log the same error twice.
 
 ## Install
 
@@ -119,4 +138,4 @@ Copy `plugin/skills/ste-writing/` (the folder containing `SKILL.md`) into the ag
 
 ## License
 
-MIT. The rule semantics reference ASD-STE100 Issue 9. No standard text is reproduced.
+MIT. The rule semantics are inspired by ASD-STE100 Issue 9. No standard text is reproduced.

@@ -5,45 +5,87 @@
 // These tests spawn the real `omp` binary. They never touch the live agent
 // config: every invocation runs with a fresh temp HOME and no XDG roots, so
 // plugin state lands under $HOME/.omp (the documented non-XDG default).
-import { describe, expect, test, beforeAll } from "bun:test";
-import { cpSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { afterAll, describe, expect, test, beforeAll } from "bun:test";
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const REPO = join(import.meta.dir, "..", ".."); // plugin/tests -> repo root
 const OMP = "omp";
+const homes: string[] = [];
+
+afterAll(() => {
+  for (const home of homes) rmSync(home, { recursive: true, force: true });
+});
 
 function omp(home: string, args: string[]): { status: number | null; stdout: string } {
-  const env: Record<string, string | undefined> = { ...process.env, HOME: home };
-  delete env.XDG_DATA_HOME;
-  delete env.XDG_STATE_HOME;
-  delete env.XDG_CACHE_HOME;
-  const r = spawnSync(OMP, args, { env, encoding: "utf8", timeout: 90_000 });
+  // Full state isolation: the live agent's user/project plugin DB (real HOME
+  // and repo cwd) leaks stale scopes into `plugin list --json`. Redirect HOME
+  // and all XDG roots into the temp HOME and run from there so omp sees only
+  // the fresh install (verified repro: one user entry, version 1.1.0).
+  const env: Record<string, string | undefined> = {
+    ...process.env,
+    HOME: home,
+    XDG_DATA_HOME: join(home, "xdg-data"),
+    XDG_STATE_HOME: join(home, "xdg-state"),
+    XDG_CACHE_HOME: join(home, "xdg-cache"),
+    XDG_CONFIG_HOME: join(home, "xdg-config"),
+  };
+  const r = spawnSync(OMP, args, { env, cwd: home, encoding: "utf8", timeout: 90_000 });
   if (r.error) throw new Error(`failed to run omp: ${r.error.message}`);
   return { status: r.status, stdout: r.stdout };
 }
 
 function freshHome(): string {
-  return mkdtempSync(join(tmpdir(), "ste-writing-test-"));
+  const home = mkdtempSync(join(tmpdir(), "ste-writing-test-"));
+  homes.push(home);
+  return home;
 }
 
 function installedVersion(home: string): string | null {
   const { stdout } = omp(home, ["plugin", "list", "--json"]);
   const data = JSON.parse(stdout) as {
-    marketplace?: { id: string; entries: { version: string; installPath: string }[] }[];
+    marketplace?: { id: string; entries: { scope: string; version: string }[] }[];
   };
-  const entry = (data.marketplace ?? []).find((p) => p.id === "ste-writing@ste-writing");
-  return entry?.entries?.[0]?.version ?? null;
+  // Scope filter: a stale project-scope entry from the live agent's config
+  // (outside the temp HOME) can shadow the temp HOME's user-scope install.
+  const entry = (data.marketplace ?? []).find(
+    (p) => p.id === "ste-writing@ste-writing" && p.entries.some((e) => e.scope === "user"),
+  );
+  return entry?.entries?.find((e) => e.scope === "user")?.version ?? null;
 }
+
+
+// omp install from a local repo copies the whole plugin dir, node_modules
+// included (~1.1GB). Each install would exhaust the tmpfs by the 3rd block.
+// Install from a sanitized copy instead (same filter the upgrade test uses).
+function sanitizedRepo(): string {
+  const copy = mkdtempSync(join(tmpdir(), "ste-writing-repo-"));
+  homes.push(copy);
+  cpSync(REPO, copy, {
+    recursive: true,
+    filter: (src) => {
+      const base = src.split(/[\\/]/).pop() ?? "";
+      // .claude-plugin is a symlink into the real repo; copying it would let
+      // writes below follow through to the live catalog.
+      return !["node_modules", ".git", ".specify", ".omp", "specs", ".claude-plugin"].includes(base);
+    },
+  });
+  return copy;
+}
+
+const REPO_SANITIZED = sanitizedRepo();
 
 function installPathOf(home: string): string | null {
   const { stdout } = omp(home, ["plugin", "list", "--json"]);
   const data = JSON.parse(stdout) as {
-    marketplace?: { id: string; entries: { version: string; installPath: string }[] }[];
+    marketplace?: { id: string; entries: { scope: string; version: string; installPath: string }[] }[];
   };
-  const entry = (data.marketplace ?? []).find((p) => p.id === "ste-writing@ste-writing");
-  return entry?.entries?.[0]?.installPath ?? null;
+  const entry = (data.marketplace ?? []).find(
+    (p) => p.id === "ste-writing@ste-writing" && p.entries.some((e) => e.scope === "user"),
+  );
+  return entry?.entries?.find((e) => e.scope === "user")?.installPath ?? null;
 }
 
 function lockEnabled(home: string): boolean | null {
@@ -58,7 +100,7 @@ function installFrom(home: string, repo: string): void {
   expect(add.status).toBe(0);
   const install = omp(home, ["plugin", "install", "ste-writing@ste-writing"]);
   expect(install.status).toBe(0);
-  expect(installedVersion(home)).toBe("1.0.0");
+  expect(installedVersion(home)).toBe("1.1.0");
 }
 
 beforeAll(() => {
@@ -71,8 +113,8 @@ beforeAll(() => {
 describe("install lifecycle (US1 acceptance)", () => {
   const home = freshHome();
 
-  test("marketplace add, install, and list show ste-writing@1.0.0", () => {
-    installFrom(home, REPO);
+  test("marketplace add, install, and list show ste-writing@1.1.0", () => {
+    installFrom(home, REPO_SANITIZED);
   });
 
   test("installed artifact is complete and functional", async () => {
@@ -97,9 +139,8 @@ describe("install lifecycle (US1 acceptance)", () => {
 describe("enable and disable (US5)", () => {
   const home = freshHome();
 
-  beforeAll(() => installFrom(home, REPO));
-
   test("disable flips the lock state and reports success", () => {
+    installFrom(home, REPO_SANITIZED);
     const r = omp(home, ["plugin", "disable", "ste-writing@ste-writing"]);
     expect(r.status).toBe(0);
     expect(lockEnabled(home)).toBe(false);
@@ -115,26 +156,18 @@ describe("enable and disable (US5)", () => {
 describe("upgrade path (US4, SC-004)", () => {
   const home = freshHome();
 
-  beforeAll(() => installFrom(home, REPO));
-
   test("bumping the catalog version upgrades the installed plugin", () => {
-    // Disposable copy of the repo with versions bumped to 1.0.1.
-    const copy = mkdtempSync(join(tmpdir(), "ste-writing-repo-"));    cpSync(REPO, copy, {
-      recursive: true,
-      filter: (src) => {
-        const base = src.split(/[\\/]/).pop() ?? "";
-        return !["node_modules", ".git", ".specify", ".omp", "specs"].includes(base);
-      },
-    });
-    for (const rel of [".omp-plugin/marketplace.json", ".claude-plugin/marketplace.json"]) {
-      const p = join(copy, rel);
-      const cat = JSON.parse(readFileSync(p, "utf8")) as { plugins: { version: string }[] };
-      cat.plugins[0].version = "1.0.1";
-      writeFileSync(p, JSON.stringify(cat, null, 2));
-    }
+    installFrom(home, REPO_SANITIZED);
+    // Disposable copy of the repo with versions bumped to 1.1.1. Only
+    // .omp-plugin is written: .claude-plugin is a symlink (see sanitizedRepo).
+    const copy = sanitizedRepo();
+    const p = join(copy, ".omp-plugin", "marketplace.json");
+    const cat = JSON.parse(readFileSync(p, "utf8")) as { plugins: { version: string }[] };
+    cat.plugins[0].version = "1.1.1";
+    writeFileSync(p, JSON.stringify(cat, null, 2));
     const pkg = join(copy, "plugin", "package.json");
     const manifest = JSON.parse(readFileSync(pkg, "utf8")) as { version: string };
-    manifest.version = "1.0.1";
+    manifest.version = "1.1.1";
     writeFileSync(pkg, JSON.stringify(manifest, null, 2));
 
     // Point the existing marketplace at the bumped copy, refresh, upgrade.
@@ -145,16 +178,15 @@ describe("upgrade path (US4, SC-004)", () => {
     expect(update.status).toBe(0);
     const upgrade = omp(home, ["plugin", "upgrade", "ste-writing@ste-writing"]);
     expect(upgrade.status).toBe(0);
-    expect(installedVersion(home)).toBe("1.0.1");
+    expect(installedVersion(home)).toBe("1.1.1");
   }, 120_000);
 });
 
 describe("uninstall (US5, FR-010)", () => {
   const home = freshHome();
 
-  beforeAll(() => installFrom(home, REPO));
-
   test("uninstall removes the plugin from the list and disk", () => {
+    installFrom(home, REPO_SANITIZED);
     const installed = installPathOf(home);
     expect(installed).not.toBeNull();
     const r = omp(home, ["plugin", "uninstall", "ste-writing@ste-writing"]);
