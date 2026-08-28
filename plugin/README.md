@@ -39,6 +39,7 @@ Restart the session (or run `/reload-plugins`) so the extension loads.
 
 ```sh
 pi install npm:airspeak
+# older omp versions: omp install npm:airspeak
 ```
 
 ### Other agents (skill only)
