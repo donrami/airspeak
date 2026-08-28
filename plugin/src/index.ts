@@ -3,13 +3,14 @@
 // English: agentic-clarity subset of prose rules, inspired by ASD-STE100 Issue 9
 // (a mechanical subset, not an STE compliance claim).
 //
-// MODE: warn (default) — appends a violation list to the tool result so the
-//                  model self-corrects on the next turn. Set to "block" for
-//                  hard enforcement that rejects violating writes before they
-//                  execute.
+// MODE: warn by default — appends a violation list to the tool result so the
+//                  model self-corrects on the next turn. Set AIRSPEAK_MODE=block
+//                  for hard enforcement that rejects violating writes before
+//                  they execute.
 //
-// MODE is the shipped default; downstream forks can flip it without touching
-// call sites because tool_call and tool_result both read the same source.
+// The AIRSPEAK_MODE env var decides the shipped default; downstream forks can
+// still override it in source without touching call sites because tool_call
+// and tool_result both read the same source.
 
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 
@@ -234,7 +235,7 @@ function extractWriteTarget(input: unknown): { filePath?: string; content?: stri
 }
 
 export default function airspeak(pi: ExtensionAPI) {
-  const MODE: "warn" | "block" = "warn"; // <- flip to "block" for hard enforcement
+  const MODE: "warn" | "block" = process.env.AIRSPEAK_MODE === "block" ? "block" : "warn";
 
   pi.on("tool_result", async (event) => {
     try {

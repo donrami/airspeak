@@ -17,10 +17,11 @@ The goal is unambiguous, low-jargon English, not STE certification. The rules ar
 - [Standards and license](#standards-and-license)
 - [Known limitations](#known-limitations)
 - [Contribute](#contribute)
+- [Support](#support)
 
 ## Install
 
-Requires omp 16.4.4 or newer (see `package.json` peerDependencies).
+Requires the pi coding agent runtime (pi.dev). `omp` is the CLI distribution: either peer package from `package.json` peerDependencies satisfies the requirement — `"@oh-my-pi/pi-coding-agent": "^16.4.4 || ^17.0.0"` (version-pinned) or `"@earendil-works/pi-coding-agent": "*"` (any version).
 
 ### omp (marketplace)
 
@@ -66,7 +67,7 @@ The full rule-family table (with STE anchors) and a [before/after example](https
 
 ## Configure
 
-**Modes**. The default mode is `warn`: violations are reported, writes always succeed. For hard enforcement, flip the `MODE` constant in `src/index.ts` to `"block"` and rebuild the package. In block mode, a write with violations is rejected before it executes. The error carries the violation list and the kill-switch hint.
+**Modes**. The default mode is `warn`: violations are reported, writes always succeed. For hard enforcement, run the agent with the `AIRSPEAK_MODE=block` env var (no source edit). In block mode, a write with violations is rejected before it executes. The error carries the violation list and the kill-switch hint.
 
 **Kill switch**. To disable linting without uninstalling:
 
@@ -78,6 +79,14 @@ disabledExtensions:
 
 ## Uninstall
 
+Marketplace:
+
+```sh
+omp plugin uninstall airspeak@airspeak
+```
+
+npm route (`pi install npm:airspeak`): removal uses the same plugin command (same plugin id):
+
 ```sh
 omp plugin uninstall airspeak@airspeak
 ```
@@ -86,10 +95,14 @@ Removal is clean: the extension stops loading, the agent keeps working, and no h
 
 ## Update
 
+Marketplace:
+
 ```sh
 omp plugin marketplace update airspeak
 omp plugin upgrade airspeak@airspeak
 ```
+
+npm route: upgrade by re-running `pi install npm:airspeak`.
 
 ## Standards and license
 
@@ -106,4 +119,8 @@ This project is released under the MIT license. The standard above is referenced
 
 ## Contribute
 
-See [AGENTS.md](https://github.com/donrami/airspeak/blob/main/plugin/AGENTS.md) for repo conventions and the release process in [CHANGELOG.md](https://github.com/donrami/airspeak/blob/main/plugin/CHANGELOG.md).
+See [AGENTS.md](https://github.com/donrami/airspeak/blob/main/plugin/AGENTS.md) for repo conventions and the release process in [CHANGELOG.md](https://github.com/donrami/airspeak/blob/main/plugin/CHANGELOG.md), or open an issue at https://github.com/donrami/airspeak/issues.
+
+## Support
+
+Report bugs and false positives at https://github.com/donrami/airspeak/issues.
