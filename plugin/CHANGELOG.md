@@ -4,9 +4,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-08-28
+
 ### Changed
 
 - Renamed from `ste-writing` to `airspeak` (npm package, omp marketplace, plugin/skill names, extension label).
+- Docs: rewritten READMEs with agentic-value framing and mascot, install-command fixes, `pi-package` keyword and `pi` manifest for pi.dev package contract.
 
 ## [1.1.0] - 2026-08-28
 

@@ -23,7 +23,7 @@ function omp(home: string, args: string[]): { status: number | null; stdout: str
   // Full state isolation: the live agent's user/project plugin DB (real HOME
   // and repo cwd) leaks stale scopes into `plugin list --json`. Redirect HOME
   // and all XDG roots into the temp HOME and run from there so omp sees only
-  // the fresh install (verified repro: one user entry, version 1.1.0).
+  // the fresh install (verified repro: one user entry, version 1.1.1).
   const env: Record<string, string | undefined> = {
     ...process.env,
     HOME: home,
@@ -100,7 +100,7 @@ function installFrom(home: string, repo: string): void {
   expect(add.status).toBe(0);
   const install = omp(home, ["plugin", "install", "airspeak@airspeak"]);
   expect(install.status).toBe(0);
-  expect(installedVersion(home)).toBe("1.1.0");
+  expect(installedVersion(home)).toBe("1.1.1");
 }
 
 beforeAll(() => {
@@ -113,7 +113,7 @@ beforeAll(() => {
 describe("install lifecycle (US1 acceptance)", () => {
   const home = freshHome();
 
-  test("marketplace add, install, and list show airspeak@1.1.0", () => {
+  test("marketplace add, install, and list show airspeak@1.1.1", () => {
     installFrom(home, REPO_SANITIZED);
   });
 
