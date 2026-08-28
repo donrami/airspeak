@@ -1,11 +1,11 @@
 # airspeak
 
-The cure for AI slop is a 1986 aircraft manual: this addon brings the mechanical writing discipline of ASD-STE100 to agent-written Markdown — a machine-checkable constraint set, not a word ban — enforced inside the write loop. It comes in two parts:
+This omp addon brings the mechanical writing discipline of ASD-STE100 to agent-written Markdown. It is a machine-checkable constraint set, not a word ban, enforced inside the write loop. It comes in two parts:
 
 1. **Lint extension** (omp): checks every `*.md` / `*.mdx` / `*.markdown` file you write or edit (plus extensionless README/CHANGELOG/RELEASE/errors/runbooks) and reports violations with rule references.
 2. **Writing-style skill** (any Agent-Skills-capable agent): the full rule guidance, installable in Claude Code, Cursor, GitHub Copilot, OpenAI Codex, and Google Gemini CLI.
 
-This is not an STE compliance tool. The goal is unambiguous, low-jargon English — the same goal STE was built for — not STE certification. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, chosen because they make agent output more deterministic and reviewable. No certification claim is made.
+The goal is unambiguous, low-jargon English, not STE certification. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, chosen because they make agent output more deterministic and reviewable. No certification claim is made.
 
 ## Contents
 
@@ -58,7 +58,7 @@ After installation, the extension hooks every `write`, `edit`, and `multi_edit` 
 Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.yml.
 ```
 
-"utilize" appears twice on purpose: it legitimately triggers two rule families at once, [STE 9.3] (phrasal verb — replace with "use") and [anti-slop] (banned vocabulary). On the next turn the agent rewrites the text to clear every violation, and the second write passes clean. Output stays consistent and reviewable at speed, and you review less — a loop no CI linter can replicate.
+"utilize" appears twice on purpose: it legitimately triggers two rule families at once, [STE 9.3] (phrasal verb — replace with "use") and [anti-slop] (banned vocabulary). On the next turn the agent rewrites the text to clear every violation, and the second write passes clean. Output stays consistent and reviewable at speed.
 
 Code files, configs, and other non-prose files are never checked.
 
