@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-08-29
+
+### Changed
+
+- Docs: clarified pi vs omp across both READMEs — the `pi` CLI (`@earendil-works/pi-coding-agent`) and the `omp` CLI (`@oh-my-pi/pi-coding-agent`) are now named explicitly in the install, update, and disable/uninstall instructions.
+- Docs: trimmed both READMEs — removed the origin-story video section and the separate Support section, merged Known limitations into Additional notes.
 ## [1.1.1] - 2026-08-28
 
 ### Changed

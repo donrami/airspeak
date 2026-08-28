@@ -1,11 +1,11 @@
 # airspeak
 
-This omp addon brings the mechanical writing discipline of ASD-STE100 to agent-written Markdown. It is a machine-checkable constraint set, not a word ban, enforced inside the write loop. It comes in two parts:
+This pi/oh-my-pi extension brings the mechanical writing discipline of [ASD-STE100](https://www.asd-ste100.org/) to agent-written Markdown. It is a machine-checkable constraint set enforced inside the write loop. It comes in two parts:
 
 1. **Lint extension** (omp): checks every `*.md` / `*.mdx` / `*.markdown` file you write or edit (plus extensionless README/CHANGELOG/RELEASE/errors/runbooks) and reports violations with rule references.
 2. **Writing-style skill** (any Agent-Skills-capable agent): the full rule guidance, installable in Claude Code, Cursor, GitHub Copilot, OpenAI Codex, and Google Gemini CLI.
 
-The goal is unambiguous, low-jargon English, not STE certification. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, chosen because they make agent output more deterministic and reviewable. No certification claim is made.
+The goal is unambiguous, low-jargon English, not STE certification. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, chosen because they make agent output more deterministic and reviewable.
 
 ## Contents
 
@@ -21,27 +21,26 @@ The goal is unambiguous, low-jargon English, not STE certification. The rules ar
 
 ## Install
 
-Requires the pi coding agent runtime (pi.dev). `omp` is the CLI distribution: either peer package from `package.json` peerDependencies satisfies the requirement — `"@oh-my-pi/pi-coding-agent": "^16.4.4 || ^17.0.0"` (version-pinned) or `"@earendil-works/pi-coding-agent": "*"` (any version).
+### oh-my-pi
 
-### omp (marketplace)
-
+Requires omp 16.4.4 or newer.
 ```sh
 omp plugin marketplace add donrami/airspeak
 omp plugin install airspeak@airspeak
 ```
 
+or
+```sh
+omp plugin install npm:airspeak
+```
+
 Restart the session (or run `/reload-plugins`) so the extension loads.
 
-### omp (npm / pi.dev)
+### pi.dev
 
 ```sh
 pi install npm:airspeak
-# older omp versions: omp install npm:airspeak
 ```
-
-### Other agents (skill only)
-
-Per-harness install commands for Claude Code, Cursor, GitHub Copilot, OpenAI Codex, and Google Gemini CLI: see [Install in the root README](https://github.com/donrami/airspeak/blob/main/README.md#install).
 
 ## How it works
 
@@ -58,12 +57,9 @@ After installation, the extension hooks every `write`, `edit`, and `multi_edit` 
 - [GR-6] Latin abbreviation "e.g." — use "for example".
 Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.yml.
 ```
-
-"utilize" appears twice on purpose: it legitimately triggers two rule families at once, [STE 9.3] (phrasal verb — replace with "use") and [anti-slop] (banned vocabulary). On the next turn the agent rewrites the text to clear every violation, and the second write passes clean. Output stays consistent and reviewable at speed.
+On the next turn the agent rewrites the text to clear every violation, and the second write passes clean. Output stays consistent and reviewable at speed.
 
 Code files, configs, and other non-prose files are never checked.
-
-The full rule-family table (with STE anchors) and a [before/after example](https://github.com/donrami/airspeak/blob/main/README.md#what-it-does) live in the root README.
 
 ## Configure
 
@@ -79,19 +75,9 @@ disabledExtensions:
 
 ## Uninstall
 
-Marketplace:
-
 ```sh
 omp plugin uninstall airspeak@airspeak
 ```
-
-npm route (`pi install npm:airspeak`): removal uses the same plugin command (same plugin id):
-
-```sh
-omp plugin uninstall airspeak@airspeak
-```
-
-Removal is clean: the extension stops loading, the agent keeps working, and no hooks remain.
 
 ## Update
 
@@ -102,7 +88,7 @@ omp plugin marketplace update airspeak
 omp plugin upgrade airspeak@airspeak
 ```
 
-npm route: upgrade by re-running `pi install npm:airspeak`.
+npm route: re-run the install command for your CLI — `pi install npm:airspeak` (pi CLI) or `omp plugin install npm:airspeak` (omp CLI).
 
 ## Standards and license
 
@@ -110,7 +96,7 @@ npm route: upgrade by re-running `pi install npm:airspeak`.
 
 This project is released under the MIT license. The standard above is referenced for rule semantics. No standard text is reproduced.
 
-## Known limitations
+## Additional notes
 
 - The em-dash rule is a style cap for agent output, not an STE rule — STE itself allows the em-dash.
 - The banned-vocabulary list is an anti-slop list for marketing adjectives, not a claim to enforce the STE dictionary.
@@ -120,7 +106,3 @@ This project is released under the MIT license. The standard above is referenced
 ## Contribute
 
 See [AGENTS.md](https://github.com/donrami/airspeak/blob/main/plugin/AGENTS.md) for repo conventions and the release process in [CHANGELOG.md](https://github.com/donrami/airspeak/blob/main/plugin/CHANGELOG.md), or open an issue at https://github.com/donrami/airspeak/issues.
-
-## Support
-
-Report bugs and false positives at https://github.com/donrami/airspeak/issues.
