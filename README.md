@@ -10,16 +10,18 @@ It lints READMEs, changelogs, release notes, runbooks, and API docs on every Mar
 
 [![npm version](https://img.shields.io/npm/v/airspeak?logo=npm&color=cb3837)](https://www.npmjs.com/package/airspeak)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/donrami/airspeak/actions/workflows/ci.yml/badge.svg)](https://github.com/donrami/airspeak/actions/workflows/ci.yml)
 
 Free, open source (MIT), no hosted service — everything runs locally inside your agent.
 
-## Contents
+Status: actively maintained.
 
 - [Why this exists](#why-this-exists)
 - [What it does](#what-it-does)
 - [Install](#install)
 - [Known limitations](#known-limitations)
 - [Why not vale or textlint?](#why-not-vale-or-textlint)
+- [Support](#support)
 - [License](#license)
 
 ## Why this exists
@@ -32,9 +34,21 @@ This is not an STE compliance tool. The goal is unambiguous, low-jargon English,
 
 The name is the lineage: airspeak is the plain, unambiguous English an aircraft manual is written in.
 
-## What it does
+The extension lints every Markdown write and edit, then appends a violation list to the tool result. The agent fixes its own violations on the next write, so output stays consistent and reviewable at speed. Default mode is warn: violations are reported and writes always succeed. A block mode exists for hard enforcement: set `AIRSPEAK_MODE=block` to enable it; see [Configure](plugin/README.md#configure). Ten rule families, each carrying the anchor it descends from:
 
-The extension lints every Markdown write and edit, then appends a violation list to the tool result. The agent fixes its own violations on the next write, so output stays consistent and reviewable at speed. Default mode is warn: violations are reported and writes always succeed. A block mode exists for hard enforcement. Ten rule families, each carrying the anchor it descends from:
+The annotation the linter appends:
+
+```text
+## airspeak (English mode: ASD-STE100) — 7 issue(s)
+- [STE 8.1] 1 semicolon(s) in prose — STE bans semicolons. Replace with period or split.
+- [STE 9.3] phrasal verb "utilize" — use "use".
+- [anti-slop] banned "utilize" — cut or replace with a concrete spec.
+- [STE 4.2] contraction "doesn't" — write "does not".
+- [STE 4.2] contraction "don't" — write "do not".
+- [GR-1] add "that": "make sure that …".
+- [GR-6] Latin abbreviation "e.g." — use "for example".
+Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.yml.
+```
 
 | Family | Label |
 |---|---|
@@ -70,7 +84,7 @@ omp plugin marketplace add donrami/airspeak
 omp plugin install airspeak@airspeak
 ```
 
-or via npm / pi.dev (`pi install npm:airspeak` delivers extension + skill):
+or via npm with [pi](https://pi.dev), the pi coding-agent runtime (`pi install npm:airspeak` delivers extension + skill):
 
 ```sh
 pi install npm:airspeak
@@ -79,30 +93,37 @@ pi install npm:airspeak
 | Harness | Discovers from | Install |
 |---|---|---|
 | Claude Code | `~/.claude/skills/` or `.claude/skills/` | `mkdir -p ~/.claude/skills/airspeak && cp plugin/skills/airspeak/SKILL.md ~/.claude/skills/airspeak/SKILL.md` |
-| Cursor | `~/.cursor/skills/`, shared `~/.agents/skills/` | same copy command with `~/.cursor/skills/` |
+| Cursor | `~/.cursor/skills/`, shared `~/.agents/skills/` | `mkdir -p ~/.cursor/skills/airspeak && cp plugin/skills/airspeak/SKILL.md ~/.cursor/skills/airspeak/SKILL.md` |
 | GitHub Copilot | `~/.copilot/skills/` or `.github/skills/` | `mkdir -p ~/.copilot/skills/airspeak && cp plugin/skills/airspeak/SKILL.md ~/.copilot/skills/airspeak/SKILL.md`; restart session |
-| OpenAI Codex | `~/.codex/skills/`, repo-local `.agents/skills/` | copy command with `~/.codex/skills/`; invoke with `$airspeak` |
+| OpenAI Codex | `~/.codex/skills/`, repo-local `.agents/skills/` | `mkdir -p ~/.codex/skills/airspeak && cp plugin/skills/airspeak/SKILL.md ~/.codex/skills/airspeak/SKILL.md`; invoke with `$airspeak` |
 | Google Gemini CLI | `~/.gemini/skills/` or `.gemini/skills/` | `gemini skills install https://github.com/donrami/airspeak --path plugin/skills/airspeak --consent` |
 
+Skill-only installs are version-independent; only the omp extension pins a version. To update a skill install, re-copy `SKILL.md` from the repo after upgrading (marketplace and npm installs update themselves).
+
 - [Full README](plugin/README.md): install, configure, disable, uninstall, standards.
-- [Changelog](plugin/CHANGELOG.md) · [Contributing guide](plugin/AGENTS.md)
+- [Changelog](plugin/CHANGELOG.md) · [Repo conventions](plugin/AGENTS.md)
 
 ### Any Agent-Skills agent
 
 Copy `plugin/skills/airspeak/` (the folder containing `SKILL.md`) into the agent's skills directory. The skill follows the [Agent Skills specification](https://agentskills.io). Every harness listed above accepts the same file unchanged.
+
+Disable / uninstall: add `disabledExtensions: ["airspeak"]` to `~/.omp/agent/config.yml`; uninstall with `omp plugin uninstall airspeak@airspeak`.
 
 ## Known limitations
 
 - HTML comments and template boilerplate (for example Given/When/Then scaffolding) are counted as prose and can produce false positives.
 - Code files, configs, and other non-prose files are never checked.
 - The rules are a mechanical subset inspired by ASD-STE100 Issue 9, not the full standard and not STE certification.
-- Disable without uninstalling: add `disabledExtensions: ["airspeak"]` to `~/.omp/agent/config.yml`. Uninstall: `omp plugin uninstall airspeak@airspeak`.
 
 ## Why not vale or textlint?
 
 - No config surface: the rules ship fixed, there is nothing to tune or maintain.
 - It runs inside the write loop, where the agent is already working, not as a CI step after the fact.
 - Self-correction: the agent fixes its own violations on the next turn, a loop a CI linter cannot replicate.
+
+## Support
+
+Bugs and false positives: open an issue at https://github.com/donrami/airspeak/issues.
 
 ## License
 
