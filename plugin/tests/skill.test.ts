@@ -4,7 +4,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SKILL = join(import.meta.dir, "..", "skills", "ste-writing", "SKILL.md");
+const SKILL = join(import.meta.dir, "..", "skills", "airspeak", "SKILL.md");
 const PKG = JSON.parse(readFileSync(join(import.meta.dir, "..", "package.json"), "utf8")) as {
   name: string;
   version: string;
@@ -16,7 +16,7 @@ const fm = Bun.YAML.parse(
 
 describe("skill manifest frontmatter", () => {
   test("parses and carries the required fields", () => {
-    expect(fm.name).toBe("ste-writing");
+    expect(fm.name).toBe("airspeak");
     expect(fm.license).toBe("MIT");
     expect(fm.alwaysApply).toBe(false);
     expect(fm.hide).toBe(false);

@@ -1,5 +1,5 @@
 ---
-name: ste-writing
+name: airspeak
 description: Write and review technical documentation — docs, READMEs, PR descriptions, error messages, runbooks, release notes, changelogs. English is inspired by ASD-STE100 Issue 9. Use when the user writes or edits technical prose, API docs, or any document where clarity and brevity matter — even if they don't explicitly mention a style guide or simplification. Never use for marketing copy, essays, creative writing, or anything that needs a distinctive voice. These specs intentionally strip voice.
 license: MIT
 compatibility: omp, Claude Code, Cursor, GitHub Copilot, and any agent supporting the Agent Skills spec
@@ -19,7 +19,7 @@ alwaysApply: false
 hide: false
 ---
 
-# ste-writing
+# airspeak
 
 Agentic clarity: mechanical, machine-checkable prose rules for technical documentation. One language: English, inspired by ASD-STE100 Issue 9. STE is the named source for the mechanical rules below; the product goal is unambiguous, low-jargon English — not STE certification.
 
@@ -69,15 +69,15 @@ The lint extension has two modes; the model always reads this skill regardless o
 
 ## Companion artifacts (for the full setup)
 
-- **Linter**: `~/.omp/agent/extensions/ste-lint.ts` runs the mechanical rules above on every `write`/`edit` to `**/*.md*`. Default mode is `warn` (injects a list of violations into the tool result so the model self-corrects on the next turn); flip to `block` by editing the file or via `disabledExtensions: ["ste-lint"]` to disable entirely.
+- **Linter**: `~/.omp/agent/extensions/airspeak.ts` runs the mechanical rules above on every `write`/`edit` to `**/*.md*`. Default mode is `warn` (injects a list of violations into the tool result so the model self-corrects on the next turn); flip to `block` by editing the file or via `disabledExtensions: ["airspeak"]` to disable entirely.
 - **Pointer**: `~/.omp/agent/APPEND_SYSTEM.md` contains a one-line reminder to consult this skill.
 
 ## Kill switches
 
 This skill is **off by default** — the model only reads it when it judges a doc-related task. To disable entirely:
 
-- Delete `~/.agent/skills/ste-writing/SKILL.md`
-- Add to `~/.omp/agent/config.yml`: `disabledExtensions: ["skill:ste-writing"]`
-- Add to `ignoredSkills: ["ste-writing"]` in config
+- Delete `~/.agent/skills/airspeak/SKILL.md`
+- Add to `~/.omp/agent/config.yml`: `disabledExtensions: ["skill:airspeak"]`
+- Add to `ignoredSkills: ["airspeak"]` in config
 - Set `enableAgentsUser: false` to turn off the whole agents provider
 - Tighten the `globs` list so it never matches your files

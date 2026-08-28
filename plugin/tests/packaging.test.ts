@@ -38,7 +38,7 @@ function omp(home: string, args: string[]): { status: number | null; stdout: str
 }
 
 function freshHome(): string {
-  const home = mkdtempSync(join(tmpdir(), "ste-writing-test-"));
+  const home = mkdtempSync(join(tmpdir(), "airspeak-test-"));
   homes.push(home);
   return home;
 }
@@ -51,7 +51,7 @@ function installedVersion(home: string): string | null {
   // Scope filter: a stale project-scope entry from the live agent's config
   // (outside the temp HOME) can shadow the temp HOME's user-scope install.
   const entry = (data.marketplace ?? []).find(
-    (p) => p.id === "ste-writing@ste-writing" && p.entries.some((e) => e.scope === "user"),
+    (p) => p.id === "airspeak@airspeak" && p.entries.some((e) => e.scope === "user"),
   );
   return entry?.entries?.find((e) => e.scope === "user")?.version ?? null;
 }
@@ -61,7 +61,7 @@ function installedVersion(home: string): string | null {
 // included (~1.1GB). Each install would exhaust the tmpfs by the 3rd block.
 // Install from a sanitized copy instead (same filter the upgrade test uses).
 function sanitizedRepo(): string {
-  const copy = mkdtempSync(join(tmpdir(), "ste-writing-repo-"));
+  const copy = mkdtempSync(join(tmpdir(), "airspeak-repo-"));
   homes.push(copy);
   cpSync(REPO, copy, {
     recursive: true,
@@ -83,7 +83,7 @@ function installPathOf(home: string): string | null {
     marketplace?: { id: string; entries: { scope: string; version: string; installPath: string }[] }[];
   };
   const entry = (data.marketplace ?? []).find(
-    (p) => p.id === "ste-writing@ste-writing" && p.entries.some((e) => e.scope === "user"),
+    (p) => p.id === "airspeak@airspeak" && p.entries.some((e) => e.scope === "user"),
   );
   return entry?.entries?.find((e) => e.scope === "user")?.installPath ?? null;
 }
@@ -92,13 +92,13 @@ function lockEnabled(home: string): boolean | null {
   const lock = join(home, ".omp", "plugins", "omp-plugins.lock.json");
   if (!existsSync(lock)) return null;
   const data = JSON.parse(readFileSync(lock, "utf8")) as { plugins: Record<string, { enabled: boolean }> };
-  return data.plugins?.["ste-writing"]?.enabled ?? null;
+  return data.plugins?.["airspeak"]?.enabled ?? null;
 }
 
 function installFrom(home: string, repo: string): void {
   const add = omp(home, ["plugin", "marketplace", "add", repo]);
   expect(add.status).toBe(0);
-  const install = omp(home, ["plugin", "install", "ste-writing@ste-writing"]);
+  const install = omp(home, ["plugin", "install", "airspeak@airspeak"]);
   expect(install.status).toBe(0);
   expect(installedVersion(home)).toBe("1.1.0");
 }
@@ -113,7 +113,7 @@ beforeAll(() => {
 describe("install lifecycle (US1 acceptance)", () => {
   const home = freshHome();
 
-  test("marketplace add, install, and list show ste-writing@1.1.0", () => {
+  test("marketplace add, install, and list show airspeak@1.1.0", () => {
     installFrom(home, REPO_SANITIZED);
   });
 
@@ -121,7 +121,7 @@ describe("install lifecycle (US1 acceptance)", () => {
     const installed = installPathOf(home);
     expect(installed).not.toBeNull();
     expect(existsSync(join(installed!, "src", "index.ts"))).toBe(true);
-    expect(existsSync(join(installed!, "skills", "ste-writing", "SKILL.md"))).toBe(true);
+    expect(existsSync(join(installed!, "skills", "airspeak", "SKILL.md"))).toBe(true);
 
     // The installed extension loads standalone (type-only import is erased)
     // and registers both lifecycle handlers.
@@ -141,13 +141,13 @@ describe("enable and disable (US5)", () => {
 
   test("disable flips the lock state and reports success", () => {
     installFrom(home, REPO_SANITIZED);
-    const r = omp(home, ["plugin", "disable", "ste-writing@ste-writing"]);
+    const r = omp(home, ["plugin", "disable", "airspeak@airspeak"]);
     expect(r.status).toBe(0);
     expect(lockEnabled(home)).toBe(false);
   });
 
   test("enable restores the lock state", () => {
-    const r = omp(home, ["plugin", "enable", "ste-writing@ste-writing"]);
+    const r = omp(home, ["plugin", "enable", "airspeak@airspeak"]);
     expect(r.status).toBe(0);
     expect(lockEnabled(home)).toBe(true);
   });
@@ -171,12 +171,12 @@ describe("upgrade path (US4, SC-004)", () => {
     writeFileSync(pkg, JSON.stringify(manifest, null, 2));
 
     // Point the existing marketplace at the bumped copy, refresh, upgrade.
-    omp(home, ["plugin", "marketplace", "remove", "ste-writing"]);
+    omp(home, ["plugin", "marketplace", "remove", "airspeak"]);
     const add = omp(home, ["plugin", "marketplace", "add", copy]);
     expect(add.status).toBe(0);
-    const update = omp(home, ["plugin", "marketplace", "update", "ste-writing"]);
+    const update = omp(home, ["plugin", "marketplace", "update", "airspeak"]);
     expect(update.status).toBe(0);
-    const upgrade = omp(home, ["plugin", "upgrade", "ste-writing@ste-writing"]);
+    const upgrade = omp(home, ["plugin", "upgrade", "airspeak@airspeak"]);
     expect(upgrade.status).toBe(0);
     expect(installedVersion(home)).toBe("1.1.1");
   }, 120_000);
@@ -189,7 +189,7 @@ describe("uninstall (US5, FR-010)", () => {
     installFrom(home, REPO_SANITIZED);
     const installed = installPathOf(home);
     expect(installed).not.toBeNull();
-    const r = omp(home, ["plugin", "uninstall", "ste-writing@ste-writing"]);
+    const r = omp(home, ["plugin", "uninstall", "airspeak@airspeak"]);
     expect(r.status).toBe(0);
     expect(installedVersion(home)).toBeNull();
     expect(existsSync(installed!)).toBe(false);

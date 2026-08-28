@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "ste-writing",
+  "name": "airspeak",
   "owner": {
     "name": "Rami Abu-Hamad",
     "url": "https://github.com/donrami"
@@ -11,15 +11,15 @@
   },
   "plugins": [
     {
-      "name": "ste-writing",
+      "name": "airspeak",
       "description": "Automatic writing-style linting for Markdown prose. English: ASD-STE100 Issue 9. Warn mode by default; block mode available.",
       "source": "./plugin",
       "version": "1.1.0",
       "author": {
         "name": "Rami Abu-Hamad"
       },
-      "homepage": "https://github.com/donrami/ste-writing",
-      "repository": "https://github.com/donrami/ste-writing",
+      "homepage": "https://github.com/donrami/airspeak",
+      "repository": "https://github.com/donrami/airspeak",
       "license": "MIT",
       "category": "productivity",
       "keywords": [

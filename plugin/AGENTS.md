@@ -4,12 +4,12 @@ Guidance for agents working on this repository.
 
 ## What this repo is
 
-`ste-writing` is a writing-style lint addon for AI agents. The repo root is an omp marketplace (`.omp-plugin/marketplace.json`); the installable addon lives in `plugin/`.
+`airspeak` is a writing-style lint addon for AI agents. The repo root is an omp marketplace (`.omp-plugin/marketplace.json`); the installable addon lives in `plugin/`.
 
 ## Layout
 
-- `plugin/src/index.ts` — the lint extension. Pure check functions at module scope (exported and unit-tested); `steLint(pi)` is the default export the agent loads.
-- `plugin/skills/ste-writing/SKILL.md` — the portable Agent Skills document (frontmatter + body). Same content as the bundled skill.
+- `plugin/src/index.ts` — the lint extension. Pure check functions at module scope (exported and unit-tested); `airspeak(pi)` is the default export the agent loads.
+- `plugin/skills/airspeak/SKILL.md` — the portable Agent Skills document (frontmatter + body). Same content as the bundled skill.
 - `plugin/tests/` — `bun test` runner. Fixtures live in `tests/fixtures/` (`corpus.json` for samples, `baseline.json` for the pinned issue lists).
 - `specs/001-publish-ste-addon/` — design / data-model / task artifacts. Gitignored, not shipped.
 
@@ -35,4 +35,4 @@ flag lives in the `test` script — run `bun run test` (or `bun test
 
 ## Release process
 
-See `CHANGELOG.md` and the release-workflow contract in `specs/001-publish-ste-addon/contracts/release-workflow.md`. Every release bumps the version in six places: both catalog files, `plugin/package.json`, `plugin/skills/ste-writing/SKILL.md` (`metadata.version`), the changelog, and the git tag.
+See `CHANGELOG.md` and the release-workflow contract in `specs/001-publish-ste-addon/contracts/release-workflow.md`. Every release bumps the version in six places: both catalog files, `plugin/package.json`, `plugin/skills/airspeak/SKILL.md` (`metadata.version`), the changelog, and the git tag.

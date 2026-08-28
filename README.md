@@ -1,4 +1,4 @@
-# ste-writing
+# airspeak
 
 Automatic writing-style linting for Markdown prose, built for AI agents. English rules inspired by ASD-STE100 Issue 9 (Simplified Technical English).
 
@@ -44,7 +44,7 @@ Before — typical agent output:
 The linter annotates the write:
 
 ```text
-## ste-lint (English mode: ASD-STE100) — 7 issue(s)
+## airspeak (English mode: ASD-STE100) — 7 issue(s)
 - [STE 8.1] 1 semicolon(s) in prose — STE bans semicolons. Replace with period or split.
 - [STE 9.3] phrasal verb "utilize" — use "use".
 - [anti-slop] banned "utilize" — cut or replace with a concrete spec.
@@ -52,7 +52,7 @@ The linter annotates the write:
 - [STE 4.2] contraction "don't" — write "do not".
 - [GR-1] add "that": "make sure that …".
 - [GR-6] Latin abbreviation "e.g." — use "for example".
-Disable linter: add `disabledExtensions: ["ste-lint"]` to ~/.omp/agent/config.yml.
+Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.yml.
 ```
 
 After — the corrected write passes clean:
@@ -66,28 +66,28 @@ The extension and the skill install independently. Install the extension for aut
 ### omp (extension + skill)
 
 ```sh
-omp plugin marketplace add donrami/ste-writing
-omp plugin install ste-writing@ste-writing
+omp plugin marketplace add donrami/airspeak
+omp plugin install airspeak@airspeak
 ```
 
 or via npm / pi.dev:
 
 ```sh
-pi install npm:ste-writing
+pi install npm:airspeak
 ```
 
 ### Claude Code (skill)
 
 ```sh
-/plugin marketplace add donrami/ste-writing
-/plugin install ste-writing@ste-writing
+/plugin marketplace add donrami/airspeak
+/plugin install airspeak@airspeak
 ```
 
 or copy the skill folder:
 
 ```sh
-mkdir -p ~/.claude/skills/ste-writing
-cp plugin/skills/ste-writing/SKILL.md ~/.claude/skills/ste-writing/SKILL.md
+mkdir -p ~/.claude/skills/airspeak
+cp plugin/skills/airspeak/SKILL.md ~/.claude/skills/airspeak/SKILL.md
 ```
 
 Claude Code discovers personal skills at startup from `~/.claude/skills/` and project skills from `.claude/skills/`.
@@ -95,40 +95,40 @@ Claude Code discovers personal skills at startup from `~/.claude/skills/` and pr
 ### Cursor (skill)
 
 ```sh
-mkdir -p ~/.cursor/skills/ste-writing
-cp plugin/skills/ste-writing/SKILL.md ~/.cursor/skills/ste-writing/SKILL.md
+mkdir -p ~/.cursor/skills/airspeak
+cp plugin/skills/airspeak/SKILL.md ~/.cursor/skills/airspeak/SKILL.md
 ```
 
-Project-level install goes to `.cursor/skills/ste-writing/`. Cursor also resolves the shared `~/.agents/skills/` and `.agents/skills/` directories.
+Project-level install goes to `.cursor/skills/airspeak/`. Cursor also resolves the shared `~/.agents/skills/` and `.agents/skills/` directories.
 
 ### GitHub Copilot (skill)
 
 ```sh
-gh skill install donrami/ste-writing ste-writing
+gh skill install donrami/airspeak airspeak
 ```
 
-or copy the folder to `~/.copilot/skills/ste-writing/` (personal) or `.github/skills/ste-writing/` (project). Copilot auto-discovers skills at session start. Start a new session after installing.
+or copy the folder to `~/.copilot/skills/airspeak/` (personal) or `.github/skills/airspeak/` (project). Copilot auto-discovers skills at session start. Start a new session after installing.
 
 ### OpenAI Codex (skill)
 
 ```sh
-mkdir -p ~/.codex/skills/ste-writing
-cp plugin/skills/ste-writing/SKILL.md ~/.codex/skills/ste-writing/SKILL.md
+mkdir -p ~/.codex/skills/airspeak
+cp plugin/skills/airspeak/SKILL.md ~/.codex/skills/airspeak/SKILL.md
 ```
 
-Repo-local install goes to `.agents/skills/ste-writing/`. Invoke explicitly with `$ste-writing`.
+Repo-local install goes to `.agents/skills/airspeak/`. Invoke explicitly with `$airspeak`.
 
 ### Google Gemini CLI (skill)
 
 ```sh
-gemini skills install https://github.com/donrami/ste-writing --path ste-writing --consent
+gemini skills install https://github.com/donrami/airspeak --path airspeak --consent
 ```
 
-or copy the folder to `~/.gemini/skills/ste-writing/` (user) or `.gemini/skills/ste-writing/` (workspace).
+or copy the folder to `~/.gemini/skills/airspeak/` (user) or `.gemini/skills/airspeak/` (workspace).
 
 ### Any Agent-Skills agent
 
-Copy `plugin/skills/ste-writing/` (the folder containing `SKILL.md`) into the agent's skills directory. The skill follows the [Agent Skills specification](https://agentskills.io). Every harness listed above accepts the same file unchanged.
+Copy `plugin/skills/airspeak/` (the folder containing `SKILL.md`) into the agent's skills directory. The skill follows the [Agent Skills specification](https://agentskills.io). Every harness listed above accepts the same file unchanged.
 
 ## Documentation
 

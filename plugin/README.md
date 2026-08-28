@@ -1,4 +1,4 @@
-# ste-writing
+# airspeak
 
 Automatic writing-style linting for Markdown prose, built for AI agents. English rules inspired by ASD-STE100 Issue 9 (Simplified Technical English).
 
@@ -29,8 +29,8 @@ omp 16.4.4 or newer (see `package.json` peerDependencies).
 ### omp (marketplace)
 
 ```sh
-omp plugin marketplace add donrami/ste-writing
-omp plugin install ste-writing@ste-writing
+omp plugin marketplace add donrami/airspeak
+omp plugin install airspeak@airspeak
 ```
 
 Restart the session (or run `/reload-plugins`) so the extension loads.
@@ -38,25 +38,25 @@ Restart the session (or run `/reload-plugins`) so the extension loads.
 ### omp (npm / pi.dev)
 
 ```sh
-pi install npm:ste-writing
+pi install npm:airspeak
 ```
 
 ### Other agents (skill only)
 
-Install the `skills/ste-writing/` directory per your agent's skill flow:
+Install the `skills/airspeak/` directory per your agent's skill flow:
 
-- Claude Code: `/plugin marketplace add donrami/ste-writing` then `/plugin install ste-writing@ste-writing`, or copy `skills/ste-writing` into your skills directory.
-- Cursor / GitHub Copilot: copy `skills/ste-writing/` into the agent's skills folder.
+- Claude Code: `/plugin marketplace add donrami/airspeak` then `/plugin install airspeak@airspeak`, or copy `skills/airspeak` into your skills directory.
+- Cursor / GitHub Copilot: copy `skills/airspeak/` into the agent's skills folder.
 
 ## How it works
 
 After installation, the extension hooks every `write`, `edit`, and `multi_edit` of a Markdown file. When the text violates a rule, the tool result carries an annotation block:
 
 ```text
-## ste-lint (English mode: ASD-STE100) — 2 issue(s)
+## airspeak (English mode: ASD-STE100) — 2 issue(s)
 - [STE 6.3] sentence has 37 words (cap 25): "The system utilizes a seamless..."
 - [anti-slop] banned "utilize" — cut or replace with a concrete spec.
-Disable linter: add `disabledExtensions: ["ste-lint"]` to ~/.omp/agent/config.yml.
+Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.yml.
 ```
 
 Code files, configs, and other non-prose files are never checked.
@@ -85,13 +85,13 @@ See the [before/after example in the root README](../README.md#what-it-does) for
 ```yaml
 # ~/.omp/agent/config.yml
 disabledExtensions:
-  - ste-lint
+  - airspeak
 ```
 
 ## Uninstall
 
 ```sh
-omp plugin uninstall ste-writing@ste-writing
+omp plugin uninstall airspeak@airspeak
 ```
 
 Removal is clean: the extension stops loading, the agent keeps working, and no hooks remain.
@@ -99,8 +99,8 @@ Removal is clean: the extension stops loading, the agent keeps working, and no h
 ## Update
 
 ```sh
-omp plugin marketplace update ste-writing
-omp plugin upgrade ste-writing@ste-writing
+omp plugin marketplace update airspeak
+omp plugin upgrade airspeak@airspeak
 ```
 
 ## Standards and license

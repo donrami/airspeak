@@ -1,11 +1,11 @@
 // Glob filtering and extension wiring tests.
 // The extension is exercised through a fake `pi` so no agent is needed.
 import { describe, expect, test } from "bun:test";
-import steLint, { buildBlockReason, PROSE_GLOBS } from "../src/index.ts";
+import airspeak, { buildBlockReason, PROSE_GLOBS } from "../src/index.ts";
 import { loadCorpus } from "./helpers.ts";
 
 const corpus = loadCorpus();
-const ANNOTATION_MARKER = "## ste-lint";
+const ANNOTATION_MARKER = "## airspeak";
 
 // Minimal ExtensionAPI stand-in: records handlers, ignores messaging.
 function makeFakePi() {
@@ -32,7 +32,7 @@ describe("PROSE_GLOBS filtering", () => {
 
 describe("tool_result handler wiring", () => {
   const { handlers, pi } = makeFakePi();
-  steLint(pi as never);
+  airspeak(pi as never);
 
   const writeEvent = (overrides: Record<string, unknown>) => ({
     type: "tool_result",

@@ -1,4 +1,4 @@
-// ste-lint — mechanical prose linter for technical writing.
+// airspeak — mechanical prose linter for technical writing.
 // Runs on tool_result for write/edit/multi_edit to *.md/*.mdx files.
 // English: agentic-clarity subset of prose rules, inspired by ASD-STE100 Issue 9
 // (a mechanical subset, not an STE compliance claim).
@@ -219,7 +219,7 @@ export function buildBlockReason(
   if (issues.length === 0) return null;
 
   const preview = issues.slice(0, 5).join(" | ");
-  return `ste-lint (English mode: ASD-STE100) blocked this write: ${issues.length} violation(s): ${preview}. Fix the violations or disable the linter with disabledExtensions: ["ste-lint"].`;
+  return `airspeak (English mode: ASD-STE100) blocked this write: ${issues.length} violation(s): ${preview}. Fix the violations or disable the linter with disabledExtensions: ["airspeak"].`;
 }
 
 // Shared input extraction for write/edit/multi_edit tool events.
@@ -233,7 +233,7 @@ function extractWriteTarget(input: unknown): { filePath?: string; content?: stri
   return { filePath, content: typeof content === "string" ? content : undefined };
 }
 
-export default function steLint(pi: ExtensionAPI) {
+export default function airspeak(pi: ExtensionAPI) {
   const MODE: "warn" | "block" = "warn"; // <- flip to "block" for hard enforcement
 
   pi.on("tool_result", async (event) => {
@@ -249,9 +249,9 @@ export default function steLint(pi: ExtensionAPI) {
       const issues = checkEnglish(content);
       if (issues.length === 0) return;
 
-      const header = `## ste-lint (English mode: ASD-STE100) — ${issues.length} issue(s)`;
+      const header = `## airspeak (English mode: ASD-STE100) — ${issues.length} issue(s)`;
       const body = issues.map((i) => `- ${i}`).join("\n");
-      const footer = `\nDisable linter: add \`disabledExtensions: ["ste-lint"]\` to ~/.omp/agent/config.yml.`;
+      const footer = `\nDisable linter: add \`disabledExtensions: ["airspeak"]\` to ~/.omp/agent/config.yml.`;
       const annotation = `\n\n---\n${header}\n${body}${footer}\n`;
 
       const newContent = (event.content ?? []).map((chunk) => {
@@ -263,7 +263,7 @@ export default function steLint(pi: ExtensionAPI) {
 
       pi.sendMessage(
         {
-          customType: "ste-lint",
+          customType: "airspeak",
           content: `${header}\n${body}`,
           display: true,
         },
@@ -273,7 +273,7 @@ export default function steLint(pi: ExtensionAPI) {
       return { content: newContent };
     } catch (err) {
       // Fail soft: a linter error must never break the write or the agent.
-      console.error("[ste-lint] tool_result handler failed", err);
+      console.error("[airspeak] tool_result handler failed", err);
     }
   });
 
