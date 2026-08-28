@@ -2,12 +2,14 @@
 
 Automatic writing-style linting for Markdown prose, built for AI agents. English rules inspired by ASD-STE100 Issue 9 (Simplified Technical English).
 
+[![npm version](https://img.shields.io/npm/v/airspeak?logo=npm&color=cb3837)](https://www.npmjs.com/package/airspeak)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 ## Contents
 
 - [Why this exists](#why-this-exists)
 - [What it does](#what-it-does)
 - [Install](#install)
-- [Documentation](#documentation)
 - [License](#license)
 
 ## Why this exists
@@ -76,65 +78,21 @@ or via npm / pi.dev:
 pi install npm:airspeak
 ```
 
-### Claude Code (skill)
 
-```sh
-/plugin marketplace add donrami/airspeak
-/plugin install airspeak@airspeak
-```
+| Harness | Discovers from | Install |
+|---|---|---|
+| Claude Code | `~/.claude/skills/` or `.claude/skills/` | `mkdir -p ~/.claude/skills/airspeak && cp plugin/skills/airspeak/SKILL.md ~/.claude/skills/airspeak/SKILL.md` |
+| Cursor | `~/.cursor/skills/`, shared `~/.agents/skills/` | same copy command with `~/.cursor/skills/` |
+| GitHub Copilot | `~/.copilot/skills/` or `.github/skills/` | copy the skill folder; restart session |
+| OpenAI Codex | `~/.codex/skills/`, repo-local `.agents/skills/` | copy command with `~/.codex/skills/`; invoke with `$airspeak` |
+| Google Gemini CLI | `~/.gemini/skills/` or `.gemini/skills/` | `gemini skills install https://github.com/donrami/airspeak --path plugin/skills/airspeak --consent` |
 
-or copy the skill folder:
-
-```sh
-mkdir -p ~/.claude/skills/airspeak
-cp plugin/skills/airspeak/SKILL.md ~/.claude/skills/airspeak/SKILL.md
-```
-
-Claude Code discovers personal skills at startup from `~/.claude/skills/` and project skills from `.claude/skills/`.
-
-### Cursor (skill)
-
-```sh
-mkdir -p ~/.cursor/skills/airspeak
-cp plugin/skills/airspeak/SKILL.md ~/.cursor/skills/airspeak/SKILL.md
-```
-
-Project-level install goes to `.cursor/skills/airspeak/`. Cursor also resolves the shared `~/.agents/skills/` and `.agents/skills/` directories.
-
-### GitHub Copilot (skill)
-
-```sh
-gh skill install donrami/airspeak airspeak
-```
-
-or copy the folder to `~/.copilot/skills/airspeak/` (personal) or `.github/skills/airspeak/` (project). Copilot auto-discovers skills at session start. Start a new session after installing.
-
-### OpenAI Codex (skill)
-
-```sh
-mkdir -p ~/.codex/skills/airspeak
-cp plugin/skills/airspeak/SKILL.md ~/.codex/skills/airspeak/SKILL.md
-```
-
-Repo-local install goes to `.agents/skills/airspeak/`. Invoke explicitly with `$airspeak`.
-
-### Google Gemini CLI (skill)
-
-```sh
-gemini skills install https://github.com/donrami/airspeak --path airspeak --consent
-```
-
-or copy the folder to `~/.gemini/skills/airspeak/` (user) or `.gemini/skills/airspeak/` (workspace).
-
-### Any Agent-Skills agent
-
-Copy `plugin/skills/airspeak/` (the folder containing `SKILL.md`) into the agent's skills directory. The skill follows the [Agent Skills specification](https://agentskills.io). Every harness listed above accepts the same file unchanged.
-
-## Documentation
 
 - [Full README](plugin/README.md): install, configure, disable, uninstall, standards.
-- [Changelog](plugin/CHANGELOG.md)
-- [Contributing guide](plugin/AGENTS.md)
+- [Changelog](plugin/CHANGELOG.md) · [Contributing guide](plugin/AGENTS.md)
+
+### Any Agent-Skills agent
+Copy `plugin/skills/airspeak/` (the folder containing `SKILL.md`) into the agent's skills directory. The skill follows the [Agent Skills specification](https://agentskills.io). Every harness listed above accepts the same file unchanged.
 
 ## License
 

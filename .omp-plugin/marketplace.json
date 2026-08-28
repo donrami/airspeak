@@ -27,7 +27,9 @@
         "asd-ste100",
         "technical-writing",
         "documentation",
-        "lint"
+        "lint",
+        "anti-slop",
+        "writing-style"
       ]
     }
   ]
