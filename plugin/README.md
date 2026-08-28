@@ -1,13 +1,11 @@
 # airspeak
 
-Automatic writing-style linting for Markdown prose, built for AI agents. English rules inspired by ASD-STE100 Issue 9 (Simplified Technical English).
-
-The addon has two parts:
+The cure for AI slop is a 1986 aircraft manual: this addon brings the mechanical writing discipline of ASD-STE100 to agent-written Markdown — a machine-checkable constraint set, not a word ban — enforced inside the write loop. It comes in two parts:
 
 1. **Lint extension** (omp): checks every `*.md` / `*.mdx` / `*.markdown` file you write or edit (plus extensionless README/CHANGELOG/RELEASE/errors/runbooks) and reports violations with rule references.
-2. **Writing-style skill** (any Agent-Skills-capable agent): the full rule guidance, installable in Claude Code, Cursor, GitHub Copilot, and others.
+2. **Writing-style skill** (any Agent-Skills-capable agent): the full rule guidance, installable in Claude Code, Cursor, GitHub Copilot, OpenAI Codex, and Google Gemini CLI.
 
-This is not an STE compliance tool. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, chosen because they make agent output more deterministic and reviewable — not a claim of STE certification.
+This is not an STE compliance tool. The goal is unambiguous, low-jargon English — the same goal STE was built for — not STE certification. The rules are a mechanical subset inspired by ASD-STE100 Issue 9, chosen because they make agent output more deterministic and reviewable. No certification claim is made.
 
 ## Contents
 
@@ -46,14 +44,21 @@ Per-harness install commands for Claude Code, Cursor, GitHub Copilot, OpenAI Cod
 
 ## How it works
 
-After installation, the extension hooks every `write`, `edit`, and `multi_edit` of a Markdown file. When the text violates a rule, the tool result carries an annotation block:
+After installation, the extension hooks every `write`, `edit`, and `multi_edit` of a Markdown file. When the text violates a rule, the tool result carries an annotation block appended so the agent self-corrects on the next turn:
 
 ```text
-## airspeak (English mode: ASD-STE100) — 2 issue(s)
-- [STE 6.3] sentence has 37 words (cap 25): "The system utilizes a seamless..."
+## airspeak (English mode: ASD-STE100) — 7 issue(s)
+- [STE 8.1] 1 semicolon(s) in prose — STE bans semicolons. Replace with period or split.
+- [STE 9.3] phrasal verb "utilize" — use "use".
 - [anti-slop] banned "utilize" — cut or replace with a concrete spec.
+- [STE 4.2] contraction "doesn't" — write "does not".
+- [STE 4.2] contraction "don't" — write "do not".
+- [GR-1] add "that": "make sure that …".
+- [GR-6] Latin abbreviation "e.g." — use "for example".
 Disable linter: add `disabledExtensions: ["airspeak"]` to ~/.omp/agent/config.yml.
 ```
+
+"utilize" appears twice on purpose: it legitimately triggers two rule families at once, [STE 9.3] (phrasal verb — replace with "use") and [anti-slop] (banned vocabulary). On the next turn the agent rewrites the text to clear every violation, and the second write passes clean. Output stays consistent and reviewable at speed, and you review less — a loop no CI linter can replicate.
 
 Code files, configs, and other non-prose files are never checked.
 
@@ -61,7 +66,7 @@ The full rule-family table (with STE anchors) and a [before/after example](../RE
 
 ## Configure
 
-**Modes**. The shipped default is `warn`: violations are reported, writes always succeed. For hard enforcement, flip the `MODE` constant in `src/index.ts` to `"block"` and rebuild the package. In block mode, a write with violations is rejected before it executes. The error carries the violation list and the kill-switch hint.
+**Modes**. The default mode is `warn`: violations are reported, writes always succeed. For hard enforcement, flip the `MODE` constant in `src/index.ts` to `"block"` and rebuild the package. In block mode, a write with violations is rejected before it executes. The error carries the violation list and the kill-switch hint.
 
 **Kill switch**. To disable linting without uninstalling:
 

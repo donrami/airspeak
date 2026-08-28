@@ -24,3 +24,5 @@ dist/
 Thumbs.db
 *.tmp
 *.swp
+# Local provenance notes (not shipped)
+docs/mascot.md
