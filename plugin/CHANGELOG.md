@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-08-29
+
+### Fixed
+
+- Packaging: the published npm tarball shipped `skills/airspeak/SKILL.md` from 1.1.1; the skill file now matches the package version.
+
 ## [1.1.3] - 2026-08-29
 
 ### Changed
