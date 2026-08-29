@@ -4,7 +4,7 @@ description: Write and review technical documentation — docs, READMEs, PR desc
 license: MIT
 compatibility: omp, Claude Code, Cursor, GitHub Copilot, and any agent supporting the Agent Skills spec
 metadata:
-  version: "1.1.4"
+  version: "1.1.5"
   author: Rami Abu-Hamad
   en-spec: inspired by ASD-STE100 Issue 9 (Jan 2025)
 globs:

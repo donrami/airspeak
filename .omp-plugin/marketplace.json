@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Simplified Technical English writing-style rules for AI agents. English: ASD-STE100 Issue 9.",
-    "version": "1.1.4"
+    "version": "1.1.5"
   },
   "plugins": [
     {
       "name": "airspeak",
       "description": "Automatic writing-style linting for Markdown prose. English: ASD-STE100 Issue 9. Warn mode by default; block mode available.",
       "source": "./plugin",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "author": {
         "name": "Rami Abu-Hamad"
       },
