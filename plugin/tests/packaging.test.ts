@@ -8,10 +8,13 @@
 import { afterAll, describe, expect, test, beforeAll } from "bun:test";
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const REPO = join(import.meta.dir, "..", ".."); // plugin/tests -> repo root
+const VERSION = (
+  JSON.parse(readFileSync(join(import.meta.dir, "..", "package.json"), "utf8")) as { version: string }
+).version;
 const OMP = "omp";
 const homes: string[] = [];
 
@@ -23,7 +26,7 @@ function omp(home: string, args: string[]): { status: number | null; stdout: str
   // Full state isolation: the live agent's user/project plugin DB (real HOME
   // and repo cwd) leaks stale scopes into `plugin list --json`. Redirect HOME
   // and all XDG roots into the temp HOME and run from there so omp sees only
-  // the fresh install (verified repro: one user entry, version 1.1.1).
+  // the fresh install (one user entry, version derived from package.json).
   const env: Record<string, string | undefined> = {
     ...process.env,
     HOME: home,
@@ -59,17 +62,19 @@ function installedVersion(home: string): string | null {
 
 // omp install from a local repo copies the whole plugin dir, node_modules
 // included (~1.1GB). Each install would exhaust the tmpfs by the 3rd block.
-// Install from a sanitized copy instead (same filter the upgrade test uses).
+const EXCLUDED_TOP_LEVEL: Record<string, true> = { node_modules: true, ".git": true, ".specify": true, ".omp": true, specs: true, ".claude-plugin": true, skills: true };
 function sanitizedRepo(): string {
   const copy = mkdtempSync(join(tmpdir(), "airspeak-repo-"));
   homes.push(copy);
   cpSync(REPO, copy, {
     recursive: true,
     filter: (src) => {
-      const base = src.split(/[\\/]/).pop() ?? "";
-      // .claude-plugin is a symlink into the real repo; copying it would let
-      // writes below follow through to the live catalog.
-      return !["node_modules", ".git", ".specify", ".omp", "specs", ".claude-plugin"].includes(base);
+      // Top-level symlinks (`skills/`, `.claude-plugin/`) point into the real
+      // repo: cpSync resolves them against the SOURCE, so copying them lets
+      // writes below follow through to the working tree. Match by first path
+      // segment — basename would also exclude nested real dirs (`plugin/skills`).
+      const top = relative(REPO, src).split(/[\\/]/)[0] ?? "";
+      return top === "" || (!(top in EXCLUDED_TOP_LEVEL) && !src.includes("node_modules"));
     },
   });
   return copy;
@@ -100,7 +105,7 @@ function installFrom(home: string, repo: string): void {
   expect(add.status).toBe(0);
   const install = omp(home, ["plugin", "install", "airspeak@airspeak"]);
   expect(install.status).toBe(0);
-  expect(installedVersion(home)).toBe("1.1.1");
+  expect(installedVersion(home)).toBe(VERSION);
 }
 
 beforeAll(() => {
@@ -113,7 +118,7 @@ beforeAll(() => {
 describe("install lifecycle (US1 acceptance)", () => {
   const home = freshHome();
 
-  test("marketplace add, install, and list show airspeak@1.1.1", () => {
+  test(`marketplace add, install, and list show airspeak@${VERSION}`, () => {
     installFrom(home, REPO_SANITIZED);
   });
 
@@ -158,27 +163,32 @@ describe("upgrade path (US4, SC-004)", () => {
 
   test("bumping the catalog version upgrades the installed plugin", () => {
     installFrom(home, REPO_SANITIZED);
-    // Disposable copy of the repo with versions bumped to 1.1.1. Only
-    // .omp-plugin is written: .claude-plugin is a symlink (see sanitizedRepo).
+    // Disposable copy of the repo with the version bumped one patch higher.
+    // Only .omp-plugin is written: .claude-plugin is a symlink (see sanitizedRepo).
     const copy = sanitizedRepo();
+    const next = VERSION.replace(/(\d+)$/, (m) => String(Number(m) + 1));
+    writeFileSync(
+      join(copy, "plugin", "skills", "airspeak", "SKILL.md"),
+      readFileSync(join(copy, "plugin", "skills", "airspeak", "SKILL.md"), "utf8").replace(`version: "${VERSION}"`, `version: "${next}"`),
+    );
     const p = join(copy, ".omp-plugin", "marketplace.json");
     const cat = JSON.parse(readFileSync(p, "utf8")) as { plugins: { version: string }[] };
-    cat.plugins[0].version = "1.1.1";
+    cat.plugins[0].version = next;
     writeFileSync(p, JSON.stringify(cat, null, 2));
     const pkg = join(copy, "plugin", "package.json");
     const manifest = JSON.parse(readFileSync(pkg, "utf8")) as { version: string };
-    manifest.version = "1.1.1";
+    manifest.version = next;
     writeFileSync(pkg, JSON.stringify(manifest, null, 2));
 
-    // Point the existing marketplace at the bumped copy, refresh, upgrade.
     omp(home, ["plugin", "marketplace", "remove", "airspeak"]);
+    // Point the existing marketplace at the bumped copy, refresh, upgrade.
     const add = omp(home, ["plugin", "marketplace", "add", copy]);
     expect(add.status).toBe(0);
     const update = omp(home, ["plugin", "marketplace", "update", "airspeak"]);
     expect(update.status).toBe(0);
     const upgrade = omp(home, ["plugin", "upgrade", "airspeak@airspeak"]);
     expect(upgrade.status).toBe(0);
-    expect(installedVersion(home)).toBe("1.1.1");
+    expect(installedVersion(home)).toBe(next);
   }, 120_000);
 });
 
