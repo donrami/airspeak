@@ -35,4 +35,13 @@ flag lives in the `test` script — run `bun run test` (or `bun test
 
 ## Release process
 
-See `CHANGELOG.md` and the release-workflow contract in `specs/001-publish-ste-addon/contracts/release-workflow.md`. Every release bumps the version in six places: both catalog files, `plugin/package.json`, `plugin/skills/airspeak/SKILL.md` (`metadata.version`), the changelog, and the git tag.
+The version is `plugin/package.json` — every other version field derives from it. To release:
+
+```sh
+cd plugin
+npm version <X.Y.Z>   # bumps package.json, syncs SKILL.md (both copies) + marketplace.json, commits, tags
+git push && git push --tags
+npm publish
+```
+
+`scripts/sync-version.mjs` keeps all version fields in sync: it runs on `npm version` (staged into the release commit) and `prepublishOnly` fails the publish if anything drifted. Write the changelog entry (`plugin/CHANGELOG.md`, `## [X.Y.Z] - YYYY-MM-DD`) before running `npm version`.

@@ -2,7 +2,15 @@
 
 All notable changes to this project are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.5] - 2026-08-29
+
+### Added
+
+- Release tooling: `plugin/scripts/sync-version.mjs` propagates `plugin/package.json`'s version to both SKILL.md copies and both marketplace.json fields. Wired into `npm version` (auto-sync and stage) and `prepublishOnly` (fail the publish on drift).
+
+### Fixed
+
+- `.omp-plugin/marketplace.json` was still at 1.1.1 while the package was 1.1.4; the new sync script brings all version fields in line and keeps them there.
 
 ## [1.1.4] - 2026-08-29
 
