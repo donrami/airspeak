@@ -9,7 +9,6 @@ airspeak brings the mechanical writing discipline of [ASD-STE100](https://www.as
 
 [![npm version](https://img.shields.io/npm/v/airspeak?logo=npm&color=cb3837)](https://www.npmjs.com/package/airspeak)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![skills.sh](https://skills.sh/b/donrami/airspeak)](https://skills.sh/donrami/airspeak)
 
 - [Why this exists](#why-this-exists)
 - [What it does](#what-it-does)
